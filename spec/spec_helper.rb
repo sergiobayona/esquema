@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "esquema"
+require 'pry-byebug'
 
 require File.expand_path('dummy/config/environment', __dir__)
 

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require_relative "esquema/version"
-require_relative "esquema/analyzer"
-require_relative "esquema/project_models"
+require_relative "esquema/model"
+require_relative "esquema/configuration"
 
 module Esquema
 end
