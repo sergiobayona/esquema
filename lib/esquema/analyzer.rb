@@ -5,7 +5,10 @@ module Esquema
     # This method is responsible for analyzing the ActiveRecord models and generating
     # the json-schema representation of them.
     def self.analyze
-      puts "Hello, world!"
+      Rails.application.eager_load!
+      ActiveRecord::Base.descendants.each do |model|
+        puts model.name
+      end
     end
   end
 end

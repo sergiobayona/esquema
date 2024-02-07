@@ -6,6 +6,6 @@ RSpec.describe Esquema do
   end
 
   it "does something useful" do
-    expect(false).to eq(true)
+    Esquema::Analyzer.analyze
   end
 end
