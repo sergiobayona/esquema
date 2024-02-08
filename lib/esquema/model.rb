@@ -13,7 +13,7 @@ module Esquema
     end
 
     def build_schema
-      model.columns.each do |column|
+      columns.each do |column|
         options = {
           name: column.name,
           type: column.type,
@@ -29,6 +29,15 @@ module Esquema
       end
 
       metadata
+    end
+
+    def columns
+      model.columns.reject {|c| excluded_column?(c.name) }
+    end
+
+    def excluded_column?(column_name)
+      raise ArgumentError, "Column name must be a string" unless column_name.is_a? String
+      Esquema.configuration.excluded_columns.include?(column_name.to_sym)
     end
 
     def name

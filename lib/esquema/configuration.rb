@@ -3,8 +3,7 @@ module Esquema
     attr_accessor :excluded_models, :excluded_columns
 
     def initialize
-      @excluded_columns = []
-      @excluded_models = []
+      reset
     end
 
     def reset
