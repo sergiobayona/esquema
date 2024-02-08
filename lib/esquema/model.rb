@@ -27,6 +27,8 @@ module Esquema
           column.name.to_sym => Property.new(**options)
         )
       end
+
+      metadata
     end
 
     def name

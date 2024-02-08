@@ -24,7 +24,6 @@ RSpec.describe Esquema::Model do
 
   context "build_schema" do
     it "returns a ruby hash representing the schema_model properties" do
-      schema_model.build_schema
       expect(schema_model.metadata.keys).to eq(model.column_names.map(&:to_sym))
     end
   end
