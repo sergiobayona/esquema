@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 RSpec.describe Esquema::Property do
-  subject(:property) { Esquema::Property.new(name: 'first_name', type: :string) }
+  subject(:property) { Esquema::Property.new(name: "first_name", type: :string) }
 
   it "does something useful" do
     expect(property).to be_a(Esquema::Property)
   end
 
   it "returns the name of the property" do
-    expect(property.name).to eq('first_name')
+    expect(property.name).to eq("first_name")
   end
 
   it "returns the type of the property" do
@@ -30,5 +30,4 @@ RSpec.describe Esquema::Property do
   it "returns the item type of the property" do
     expect(property.item_type).to eq(nil)
   end
-
 end

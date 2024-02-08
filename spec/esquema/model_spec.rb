@@ -9,9 +9,9 @@ RSpec.describe Esquema::Model do
   end
 
   it "raises an error if the class is not an ActiveRecord schema_model" do
-    expect {
+    expect do
       described_class.new(String)
-    }.to raise_error(ArgumentError, "Class is not an ActiveRecord model")
+    end.to raise_error(ArgumentError, "Class is not an ActiveRecord model")
   end
 
   it "returns a ruby hash representing the schema_model properties" do
@@ -21,7 +21,7 @@ RSpec.describe Esquema::Model do
   it "returns a ruby hash representing the schema_model properties" do
     expect(schema_model.metadata).to_not be_empty
     expect(schema_model.metadata).to be_a(Hash)
-    expect(schema_model.metadata.keys).to eq([:title, :description, :type, :properties])
+    expect(schema_model.metadata.keys).to eq(%i[title description type properties])
   end
 
   context "build_schema" do
@@ -38,9 +38,9 @@ RSpec.describe Esquema::Model do
     end
 
     it "raises an error if the column name is not a string" do
-      expect {
+      expect do
         schema_model.excluded_column?(1)
-      }.to raise_error(ArgumentError, "Column name must be a string")
+      end.to raise_error(ArgumentError, "Column name must be a string")
     end
 
     it "returns true if included" do

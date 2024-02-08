@@ -1,19 +1,19 @@
 RSpec.describe Esquema::Configuration do
-  describe 'default settings' do
-    it 'has a default value for excluded_models' do
+  describe "default settings" do
+    it "has a default value for excluded_models" do
       expect(Esquema.configuration.excluded_models).to eq([])
     end
 
-    it 'has a default value for excluded_columns' do
+    it "has a default value for excluded_columns" do
       expect(Esquema.configuration.excluded_columns).to eq([])
     end
   end
 
-  describe 'custom configuration' do
+  describe "custom configuration" do
     before(:each) do
       Esquema.configure do |config|
-        config.excluded_models = ['User']
-        config.excluded_columns = [:id, :created_at, :updated_at, :deleted_at]
+        config.excluded_models = ["User"]
+        config.excluded_columns = %i[id created_at updated_at deleted_at]
       end
     end
 
@@ -22,19 +22,18 @@ RSpec.describe Esquema::Configuration do
       Esquema.configuration.reset
     end
 
-    it 'allows setting custom values for excluded_models' do
-      expect(Esquema.configuration.excluded_models).to eq(['User'])
+    it "allows setting custom values for excluded_models" do
+      expect(Esquema.configuration.excluded_models).to eq(["User"])
     end
 
-    it 'allows setting custom values for excluded_columns' do
-      expect(Esquema.configuration.excluded_columns).to eq([:id, :created_at, :updated_at, :deleted_at])
+    it "allows setting custom values for excluded_columns" do
+      expect(Esquema.configuration.excluded_columns).to eq(%i[id created_at updated_at deleted_at])
     end
 
-    it 'resets the configuration to default' do
+    it "resets the configuration to default" do
       Esquema.configuration.reset
       expect(Esquema.configuration.excluded_models).to eq([])
       expect(Esquema.configuration.excluded_columns).to eq([])
     end
   end
-
 end

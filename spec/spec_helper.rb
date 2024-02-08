@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require "esquema"
-require 'pry-byebug'
+require "pry-byebug"
 
-require File.expand_path('dummy/config/environment', __dir__)
+require File.expand_path("dummy/config/environment", __dir__)
 
 Dir[File.expand_path("spec/support/**/*.rb")].each { |f| require f }
 
