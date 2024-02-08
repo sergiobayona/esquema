@@ -19,13 +19,15 @@ RSpec.describe Esquema::Model do
   end
 
   it "returns a ruby hash representing the schema_model properties" do
-    expect(schema_model.metadata).to eq({})
+    expect(schema_model.metadata).to_not be_empty
+    expect(schema_model.metadata).to be_a(Hash)
+    expect(schema_model.metadata.keys).to eq([:title, :description, :type, :properties])
   end
 
   context "build_schema" do
     it "returns a ruby hash representing the schema_model properties" do
       schema_model.build_schema
-      expect(schema_model.metadata.keys).to eq(model.column_names.map(&:to_sym))
+      expect(schema_model.metadata[:properties].keys).to eq(model.column_names.map(&:to_sym))
     end
   end
 

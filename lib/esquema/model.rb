@@ -9,7 +9,12 @@ module Esquema
     def initialize(model)
       raise ArgumentError, "Class is not an ActiveRecord model" unless model.ancestors.include? ActiveRecord::Base
       @model = model
-      @metadata = {}
+      @metadata = {
+        title: model.name.humanize,
+        description: nil,
+        type: "object",
+        properties: {}
+      }
     end
 
     def build_schema
@@ -23,7 +28,7 @@ module Esquema
           item_type: nil
         }
 
-        metadata.merge!(
+        metadata[:properties].merge!(
           column.name.to_sym => Property.new(**options)
         )
       end

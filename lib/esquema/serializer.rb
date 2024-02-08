@@ -10,7 +10,7 @@ module Esquema
     end
 
     def serialize
-      Model.new(@model).build_schema.as_json
+      Model.new(@model).build_schema.to_json
     end
 
   end
