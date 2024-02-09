@@ -6,7 +6,7 @@ class CreateCompanies < ActiveRecord::Migration[7.1]
       t.string :city
       t.string :state
       t.string :zip
-      t.string :country
+      t.string :country, default: "United States of America"
 
       t.timestamps
     end
