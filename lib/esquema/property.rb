@@ -1,27 +1,27 @@
-require_relative 'type_caster'
+require_relative "type_caster"
 module Esquema
   class Property
     TYPE_MAPPINGS = {
-      date: 'date',
-      datetime: 'date-time',
-      time: 'time',
-      string: 'string',
-      integer: 'integer',
-      float: 'number',
-      decimal: 'number',
-      boolean: 'boolean',
-      array: 'array'
+      date: "date",
+      datetime: "date-time",
+      time: "time",
+      string: "string",
+      integer: "integer",
+      float: "number",
+      decimal: "number",
+      boolean: "boolean",
+      array: "array"
     }.freeze
 
-    ATTRS = %i[type default title description item_type].freeze
+    ATTRS = %i[type default title description item_type items enum].freeze
     attr_accessor(*ATTRS)
-    attr_reader :column
+    attr_reader :property, :type
 
-    def initialize(column)
-      raise ArgumentError, 'object must have a type' unless column.respond_to?(:type)
-      raise ArgumentError, 'column must have a name' unless column.respond_to?(:name)
+    def initialize(property, type = nil)
+      raise ArgumentError, "property must have a name" unless property.respond_to?(:name)
 
-      @column = column
+      @property = property
+      @type = type
     end
 
     def valid_string?(string)
@@ -29,34 +29,45 @@ module Esquema
     end
 
     def as_json
-      ATTRS.each_with_object({}) do |column, hash|
-        value = send("build_#{column}")
+      ATTRS.each_with_object({}) do |property, hash|
+        value = send("build_#{property}")
         next if value.nil? || (value.is_a?(String) && value.empty?)
 
-        hash[column] = value
+        hash[property] = value
       end.compact
     end
 
     def build_title
-      return unless valid_string?(column.name)
-
-      column.name.humanize
+      property.name.to_s.humanize
     end
 
     def build_default
-      @default = TypeCaster.cast(column.type, column.default) unless column.default.nil?
+      return unless property.respond_to?(:default)
+
+      @default = TypeCaster.cast(property.type, property.default) unless property.default.nil?
     end
 
     def build_type
-      @type = TYPE_MAPPINGS[column.type]
+      return TYPE_MAPPINGS[type] if type
+
+      @type = TYPE_MAPPINGS[property.type]
     end
 
     def build_item_type
-      return unless column.respond_to?(:item_type)
+      return unless property.respond_to?(:item_type)
 
-      @item_type = column.item_type if column.type == :array
+      @item_type = property.item_type if property.type == :array
     end
 
     def build_description; end
+
+    def build_items
+      return unless type == :array
+
+      class_name = property.class_name.constantize
+      @items = Model.new(class_name).build_schema
+    end
+
+    def build_enum; end
   end
 end

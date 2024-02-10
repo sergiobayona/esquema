@@ -21,13 +21,25 @@ module Esquema
     end
 
     def build_properties
-      columns.each_with_object({}) do |attr, properties|
-        properties[attr.name] = Property.new(attr)
+      @properties ||= {}
+
+      columns.each do |property|
+        @properties[property.name] ||= Property.new(property)
       end
+
+      has_many_associations.each do |association|
+        @properties[association.name] ||= Property.new(association, :array)
+      end
+
+      @properties
     end
 
     def columns
       model.columns.reject { |c| excluded_column?(c.name) }
+    end
+
+    def has_many_associations
+      model.reflect_on_all_associations(:has_many)
     end
 
     def excluded_column?(column_name)
