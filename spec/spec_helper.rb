@@ -5,7 +5,7 @@ require "pry-byebug"
 
 require File.expand_path("dummy/config/environment", __dir__)
 
-Dir[File.expand_path("spec/support/**/*.rb")].each { |f| require f }
+Dir[File.expand_path("spec/support/**/*.rb")].sort.each { |f| require f }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

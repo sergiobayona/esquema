@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Esquema
   module TypeCaster
     def self.cast(type, value) # rubocop:disable Metrics/MethodLength

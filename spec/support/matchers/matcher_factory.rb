@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MatcherFactory
   def initialize(matcher_name)
     @matcher_name = matcher_name

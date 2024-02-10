@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Allows to present failures in a nice way for each json path
 class FailurePresenter
   class << self
@@ -66,7 +68,7 @@ class FailurePresenter
 
       prefix = "#{path}/" if path && !path.empty?
 
-      items = error[:missing].map do |item|
+      error[:missing].map do |item|
         %(
           json atom at path "#{prefix}#{item[:index]}" is missing
 
@@ -77,19 +79,19 @@ class FailurePresenter
     end
 
     def error_is_size_mismatch?(error)
-      error.is_a?(Hash) && error.has_key?(:_size_mismatch_error)
+      error.is_a?(Hash) && error.key?(:_size_mismatch_error)
     end
 
     def error_is_not_eq?(error)
-      error.is_a?(Hash) && error.has_key?(:expected) && !error[:expected].is_a?(Regexp)
+      error.is_a?(Hash) && error.key?(:expected) && !error[:expected].is_a?(Regexp)
     end
 
     def error_is_not_match?(error)
-      error.is_a?(Hash) && error.has_key?(:expected) && error[:expected].is_a?(Regexp)
+      error.is_a?(Hash) && error.key?(:expected) && error[:expected].is_a?(Regexp)
     end
 
     def error_is_missing?(error)
-      error.is_a?(Hash) && error.has_key?(:missing)
+      error.is_a?(Hash) && error.key?(:missing)
     end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Esquema
   class Configuration
     attr_accessor :excluded_models, :excluded_columns

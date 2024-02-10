@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Esquema.configure do |config|
   # Excluded Models:
   # Specify the models that you want to exclude from having Esquema functionality.

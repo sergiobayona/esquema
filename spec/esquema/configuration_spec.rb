@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Esquema::Configuration do
   describe "default settings" do
     it "has a default value for excluded_models" do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "A schema with multiple objects" do
   let(:company) {}
   subject(:serializer) { Esquema::Serializer.new(Company) }

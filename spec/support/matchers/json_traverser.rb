@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "json"
 require_relative "matchers"
 
@@ -8,8 +10,8 @@ module RSpec
     # match. Errors are accumulated in errors hash for each
     # json atom paths.
     class JsonTraverser
-      HANDLED_BY_SIMPLE_VALUE_HANDLER = [String, Numeric, FalseClass, TrueClass, NilClass]
-      RSPECMATCHERS = [RSpec::Matchers::BuiltIn::BaseMatcher, RSpec::Matchers::AliasedMatcher]
+      HANDLED_BY_SIMPLE_VALUE_HANDLER = [String, Numeric, FalseClass, TrueClass, NilClass].freeze
+      RSPECMATCHERS = [RSpec::Matchers::BuiltIn::BaseMatcher, RSpec::Matchers::AliasedMatcher].freeze
       SUPPORTED_VALUES = [Hash, Regexp, Array, ::Matchers::UnorderedArrayMatcher] +
                          HANDLED_BY_SIMPLE_VALUE_HANDLER + RSPECMATCHERS
 
@@ -137,7 +139,7 @@ module RSpec
 
         def has_key?(actual, key)
           if actual.is_a?(Hash)
-            actual.has_key?(key) || actual.has_key?(key.to_s)
+            actual.key?(key) || actual.key?(key.to_s)
           elsif actual.is_a?(Array)
             actual.count > key
           else
@@ -147,7 +149,7 @@ module RSpec
 
         def fetch(actual, key, default = nil)
           if actual.is_a?(Hash)
-            actual.has_key?(key) ? actual[key] : actual[key.to_s]
+            actual.key?(key) ? actual[key] : actual[key.to_s]
           elsif actual.is_a?(Array)
             actual[key]
           else
