@@ -10,14 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_07_193222) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_10_174723) do
+  create_table "addresses", force: :cascade do |t|
+    t.string "address_line_1"
+    t.string "address_line2"
+    t.string "state"
+    t.string "postal_code"
+    t.string "country", default: "United States of America"
+    t.integer "company_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_addresses_on_company_id"
+  end
+
   create_table "companies", force: :cascade do |t|
     t.string "name"
-    t.string "address"
-    t.string "city"
-    t.string "state"
-    t.string "zip"
-    t.string "country", default: "United States of America"
+    t.string "tax_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -44,5 +52,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_193222) do
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
+  add_foreign_key "addresses", "companies"
   add_foreign_key "employees", "companies"
 end

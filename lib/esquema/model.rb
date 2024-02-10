@@ -9,6 +9,7 @@ module Esquema
       raise ArgumentError, "Class is not an ActiveRecord model" unless model.ancestors.include? ActiveRecord::Base
 
       @model = model
+      @properties = {}
     end
 
     def build_schema
@@ -21,17 +22,30 @@ module Esquema
     end
 
     def build_properties
-      @properties ||= {}
+      add_properties_from_columns
+      add_properties_from_has_many_associations
+      add_properties_from_has_one_associations
 
+      @properties
+    end
+
+    def add_properties_from_columns
       columns.each do |property|
         @properties[property.name] ||= Property.new(property)
       end
+    end
 
+    def add_properties_from_has_many_associations
       has_many_associations.each do |association|
-        @properties[association.name] ||= Property.new(association, :array)
+        @properties[association.name] ||= Property.new(association)
       end
+    end
 
-      @properties
+    def add_properties_from_has_one_associations
+      has_one_associations.each do |association|
+        klass = association.klass.name.constantize
+        @properties[association.name] ||= self.class.new(klass).build_schema
+      end
     end
 
     def columns
@@ -40,6 +54,10 @@ module Esquema
 
     def has_many_associations
       model.reflect_on_all_associations(:has_many)
+    end
+
+    def has_one_associations
+      model.reflect_on_all_associations(:has_one)
     end
 
     def excluded_column?(column_name)

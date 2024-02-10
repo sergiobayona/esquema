@@ -2,7 +2,7 @@ module Esquema
   module TypeCaster
     def self.cast(type, value) # rubocop:disable Metrics/MethodLength
       case type
-      when :string
+      when :string, :text
         value.to_s
       when :integer
         begin

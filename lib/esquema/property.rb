@@ -6,22 +6,23 @@ module Esquema
       datetime: "date-time",
       time: "time",
       string: "string",
+      text: "string",
       integer: "integer",
       float: "number",
       decimal: "number",
       boolean: "boolean",
-      array: "array"
+      array: "array",
+      object: "object"
     }.freeze
 
     ATTRS = %i[type default title description item_type items enum].freeze
     attr_accessor(*ATTRS)
-    attr_reader :property, :type
+    attr_reader :property
 
-    def initialize(property, type = nil)
+    def initialize(property)
       raise ArgumentError, "property must have a name" unless property.respond_to?(:name)
 
       @property = property
-      @type = type
     end
 
     def valid_string?(string)
@@ -48,7 +49,7 @@ module Esquema
     end
 
     def build_type
-      return TYPE_MAPPINGS[type] if type
+      return TYPE_MAPPINGS[:array] if property.try(:collection?)
 
       @type = TYPE_MAPPINGS[property.type]
     end
@@ -62,7 +63,7 @@ module Esquema
     def build_description; end
 
     def build_items
-      return unless type == :array
+      return unless property.try(:collection?)
 
       class_name = property.class_name.constantize
       @items = Model.new(class_name).build_schema
