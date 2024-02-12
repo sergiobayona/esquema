@@ -33,12 +33,16 @@ module Esquema
 
     def add_properties_from_columns
       columns.each do |property|
+        next if property.name.end_with?("_id") && config.exclude_foreign_keys?
+
         @properties[property.name] ||= Property.new(property)
       end
     end
 
     def add_properties_from_has_many_associations
       has_many_associations.each do |association|
+        next if config.excluded_models.include?(association.klass.name)
+
         @properties[association.name] ||= Property.new(association)
       end
     end
@@ -65,11 +69,15 @@ module Esquema
     def excluded_column?(column_name)
       raise ArgumentError, "Column name must be a string" unless column_name.is_a? String
 
-      Esquema.configuration.excluded_columns.include?(column_name.to_sym)
+      config.excluded_columns.include?(column_name.to_sym)
     end
 
     def name
       model.name
+    end
+
+    def config
+      Esquema.configuration
     end
   end
 end

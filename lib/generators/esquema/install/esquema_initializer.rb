@@ -7,6 +7,12 @@ Esquema.configure do |config|
   # By default, all models are included.
   config.exclude_models = []
 
+  # Exclude Foreign Keys:
+  # Specify whether or not to exclude foreign keys from the json-schema output.
+  # By default, foreign keys are excluded.
+  # foreign keys are loosely defined as columns that end with "_id".
+  config.exclude_foreign_keys = true
+
   # Excluded Columns:
   # Specify the columns that you want to exclude from the json-schema output.
   # These are columns common to all models, such as id, created_at, updated_at, etc.

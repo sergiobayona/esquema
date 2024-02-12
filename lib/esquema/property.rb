@@ -27,10 +27,6 @@ module Esquema
       @property = property
     end
 
-    def valid_string?(string)
-      string.is_a?(String) && !string.empty?
-    end
-
     def as_json
       ATTRS.each_with_object({}) do |property, hash|
         value = send("build_#{property}")

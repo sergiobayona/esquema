@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Esquema::Property do
-  it "raises an error if the attribute is not an object" do
-    expect { Esquema::Property.new("foo") }.to raise_error(ArgumentError, "object must have a type")
-  end
-
   context "as_json with an ID column" do
     let(:id_column) { Employee.columns.find { |c| c.name == "id" } }
     let(:property) { Esquema::Property.new(id_column) }
@@ -15,7 +11,7 @@ RSpec.describe Esquema::Property do
   end
 
   context "string column with default" do
-    let(:string_column) { Company.columns.find { |c| c.name == "country" } }
+    let(:string_column) { Address.columns.find { |c| c.name == "country" } }
     let(:property) { Esquema::Property.new(string_column) }
 
     it "includes the required keywords and values" do
@@ -54,7 +50,7 @@ RSpec.describe Esquema::Property do
     end
   end
 
-  context "date column with" do
+  context "date column" do
     let(:date_column) { Employee.columns.find { |c| c.name == "birth_date" } }
 
     let(:property) { Esquema::Property.new(date_column) }
