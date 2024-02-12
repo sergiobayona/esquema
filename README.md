@@ -1,12 +1,49 @@
 # Esquema
 
-TODO: Delete this and the text below, and describe your gem
+Esquema is a Ruby library for JSON Schema generation from ActiveRecord models.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/esquema`. To experiment with that code, run `bin/console` for an interactive prompt.
+Example:
+
+```ruby
+class User < ApplicationRecord
+  include Esquema::Model
+    # column :name, :string
+    # column :email, :string
+
+  end
+end
+```
+
+Calling `User.json_schema` will return the JSON Schema for the User model:
+
+```json
+{
+  "title": "User model",
+  "description": "Schema representation of the User model",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
+```
 
 ## Installation
-
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
 
 Install the gem and add to the application's Gemfile by executing:
 
@@ -18,7 +55,17 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-TODO: Write usage instructions here
+Simply include the `Esquema::Model` module in your ActiveRecord model and call the `json_schema` method to generate the JSON Schema for the model.
+
+There are multiple ways to customize the generated schema:
+
+- Exclude columns by specifying the `exclude_columns` option on the configuration file at "<rails_app>/config/initializer/esquema.rb".
+
+```ruby
+    Esquema.configure do |config|
+    config.excluded_columns = %i[id created_at updated_at]
+    end
+```
 
 ## Development
 
