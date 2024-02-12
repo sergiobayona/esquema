@@ -1,17 +1,50 @@
 # frozen_string_literal: true
 
 RSpec.describe Esquema::Property do
-  context "as_json with an ID column" do
-    let(:id_column) { Employee.columns.find { |c| c.name == "id" } }
-    let(:property) { Esquema::Property.new(id_column) }
+  # Establish a connection to an in-memory SQLite database
+  ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
+
+  # Defines the schema for the 'users' table
+  ActiveRecord::Schema.define do
+    create_table :users do |t|
+      t.string :name
+      t.integer :group
+      t.date :dob
+      t.float :salary
+      t.boolean :active, default: false
+      t.text :bio
+      t.string :country, default: "United States of America"
+      t.json :preferences
+      t.timestamps
+    end
+  end
+
+  # Defines the User model
+  class User < ActiveRecord::Base
+  end
+
+  let(:model) { User }
+
+  context "string column" do
+    let(:string_column) { User.columns.find { |c| c.name == "name" } }
+    let(:property) { Esquema::Property.new(string_column) }
 
     it "includes the required keywords and values" do
-      expect(property.as_json).to eq({ type: "integer", title: "Id" })
+      expect(property.as_json).to eq({ type: "string", title: "Name" })
+    end
+  end
+
+  context "integer column" do
+    let(:integer_column) { User.columns.find { |c| c.name == "group" } }
+    let(:property) { Esquema::Property.new(integer_column) }
+
+    it "includes the required keywords and values" do
+      expect(property.as_json).to eq({ type: "integer", title: "Group" })
     end
   end
 
   context "string column with default" do
-    let(:string_column) { Address.columns.find { |c| c.name == "country" } }
+    let(:string_column) { User.columns.find { |c| c.name == "country" } }
     let(:property) { Esquema::Property.new(string_column) }
 
     it "includes the required keywords and values" do
@@ -24,7 +57,7 @@ RSpec.describe Esquema::Property do
   end
 
   context "boolean column with default value" do
-    let(:boolean_column) { Employee.columns.find { |c| c.name == "active" } }
+    let(:boolean_column) { User.columns.find { |c| c.name == "active" } }
 
     let(:property) { Esquema::Property.new(boolean_column) }
 
@@ -37,8 +70,21 @@ RSpec.describe Esquema::Property do
     end
   end
 
+  context "text column" do
+    let(:text_column) { User.columns.find { |c| c.name == "bio" } }
+
+    let(:property) { Esquema::Property.new(text_column) }
+
+    it "includes the required keywords and values" do
+      expect(property.as_json).to eq({
+                                       type: "string",
+                                       title: "Bio"
+                                     })
+    end
+  end
+
   context "datetime column" do
-    let(:datetime_column) { Employee.columns.find { |c| c.name == "created_at" } }
+    let(:datetime_column) { User.columns.find { |c| c.name == "created_at" } }
 
     let(:property) { Esquema::Property.new(datetime_column) }
 
@@ -51,14 +97,14 @@ RSpec.describe Esquema::Property do
   end
 
   context "date column" do
-    let(:date_column) { Employee.columns.find { |c| c.name == "birth_date" } }
+    let(:date_column) { User.columns.find { |c| c.name == "dob" } }
 
     let(:property) { Esquema::Property.new(date_column) }
 
     it "includes the required keywords and values" do
       expect(property.as_json).to eq({
                                        type: "date",
-                                       title: "Birth date"
+                                       title: "Dob"
                                      })
     end
   end

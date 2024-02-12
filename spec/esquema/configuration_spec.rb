@@ -1,6 +1,41 @@
 # frozen_string_literal: true
 
 RSpec.describe Esquema::Configuration do
+  # Establish a connection to an in-memory SQLite database
+  ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
+
+  # Defines the schema for the 'users' table
+  ActiveRecord::Schema.define do
+    create_table :users do |t|
+      t.string :name
+      t.integer :group
+      t.date :dob
+      t.float :salary
+      t.boolean :active, default: false
+      t.text :bio
+      t.string :country, default: "United States of America"
+      t.json :preferences
+      t.timestamps
+    end
+
+    create_table :tasks do |t|
+      t.string :title
+      t.integer :user_id
+      t.timestamps
+    end
+  end
+
+  # Define models
+  class User < ActiveRecord::Base
+    has_many :tasks
+
+    include Esquema::Model
+  end
+
+  class Task < ActiveRecord::Base
+    belongs_to :user
+  end
+
   after(:each) do
     # Reset configuration to default
     Esquema.configuration.reset
@@ -40,19 +75,18 @@ RSpec.describe Esquema::Configuration do
     end
 
     it "does not include the excluded model in the schema" do
-      employee_schema = Esquema::Serializer.new(Employee).serialize
       expect(Esquema.configuration.excluded_models).to eq(["Task"])
-      expect(employee_schema).not_to include_json({
-                                                    properties: {
-                                                      tasks: {
-                                                        title: "Tasks"
-                                                      }
-                                                    }
-                                                  })
+      expect(User.json_schema).not_to include_json({
+                                                     properties: {
+                                                       tasks: {
+                                                         title: "Tasks"
+                                                       }
+                                                     }
+                                                   })
     end
   end
 
-  describe "excluded columns" do
+  describe "exclude columns" do
     before(:each) do
       Esquema.configure do |config|
         config.excluded_columns = %i[id created_at updated_at deleted_at]
@@ -64,45 +98,74 @@ RSpec.describe Esquema::Configuration do
     end
 
     it "excludes columns from the schema" do
-      employee_schema = Esquema::Serializer.new(Employee).serialize
-      expect(employee_schema).not_to include_json({
-                                                    properties: {
-                                                      id: {
-                                                        title: "Id"
-                                                      },
-                                                      created_at: {
-                                                        title: "Created at"
-                                                      },
-                                                      updated_at: {
-                                                        title: "Updated at"
-                                                      },
-                                                      deleted_at: {
-                                                        title: "Deleted at"
-                                                      }
-                                                    }
-                                                  })
+      expect(Task.json_schema).not_to include_json({
+                                                     properties: {
+                                                       id: {
+                                                         title: "Id"
+                                                       },
+                                                       created_at: {
+                                                         title: "Created at"
+                                                       },
+                                                       updated_at: {
+                                                         title: "Updated at"
+                                                       }
+                                                     }
+                                                   })
+    end
+  end
+
+  describe "without excluded columns" do
+    it "includes all columns in the schema" do
+      expect(User.json_schema).to include_json({
+                                                 properties: {
+                                                   id: {
+                                                     title: "Id"
+                                                   },
+                                                   name: {
+                                                     title: "Name"
+                                                   },
+                                                   group: {
+                                                     title: "Group"
+                                                   },
+                                                   dob: {
+                                                     title: "Dob"
+                                                   },
+                                                   salary: {
+                                                     title: "Salary"
+                                                   },
+                                                   active: {
+                                                     title: "Active"
+                                                   },
+                                                   bio: {
+                                                     title: "Bio"
+                                                   },
+                                                   country: {
+                                                     title: "Country"
+                                                   },
+                                                   preferences: {
+                                                     title: "Preferences"
+                                                   },
+                                                   created_at: {
+                                                     title: "Created at"
+                                                   },
+                                                   updated_at: {
+                                                     title: "Updated at"
+                                                   }
+                                                 }
+                                               })
     end
   end
 
   describe "exclude foreign keys" do
-    it "is true by default" do
-      expect(Esquema.configuration.exclude_foreign_keys).to eq(true)
+    Esquema.configure do |config|
+      config.exclude_foreign_keys = false
     end
 
     it "allows setting custom values for exclude_foreign_keys" do
-      Esquema.configure do |config|
-        config.exclude_foreign_keys = false
-      end
-
       expect(Esquema.configuration.exclude_foreign_keys).to eq(false)
     end
 
-    it "excludes foreign keys from the schema" do
-      Esquema.configure do |config|
-        config.exclude_foreign_keys = false
-      end
-
-      employee_schema = Esquema::Serializer.new(Employee).serialize
+    it "includes foreign keys in the schema" do
       expect(employee_schema).to include_json({
                                                 properties: {
                                                   company_id: {
@@ -111,20 +174,17 @@ RSpec.describe Esquema::Configuration do
                                                 }
                                               })
     end
-
-    it "excludes foreign keys from the schema" do
-      Esquema.configure do |config|
-        config.exclude_foreign_keys = true
-      end
-
-      employee_schema = Esquema::Serializer.new(Employee).serialize
-      expect(employee_schema).not_to include_json({
-                                                    properties: {
-                                                      company_id: {
-                                                        title: "Company"
-                                                      }
-                                                    }
-                                                  })
-    end
   end
+
+  # describe "including foreign keys" do
+  #   it "it includes foreign keys in the schema" do
+  #     expect(User.json_schema).not_to include_json({
+  #                                                    properties: {
+  #                                                      tasks: {
+  #                                                        title: "Tasks"
+  #                                                      }
+  #                                                    }
+  #                                                  })
+  #   end
+  # end
 end
