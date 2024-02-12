@@ -64,7 +64,7 @@ module Esquema
       return unless property.try(:collection?)
 
       class_name = property.class_name.constantize
-      @items = Model.new(class_name).build_schema
+      @items = Builder.new(class_name).build_schema
     end
 
     def build_enum; end

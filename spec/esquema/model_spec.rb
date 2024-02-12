@@ -3,19 +3,6 @@
 require "spec_helper"
 
 RSpec.describe Esquema::Model do
-  # Establish a connection to an in-memory SQLite database
-  ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
-
-  # Defines the schema for the 'users' table
-  ActiveRecord::Schema.define do
-    create_table :users do |t|
-      t.string :name
-      t.string :email
-      t.timestamps
-    end
-  end
-
-  # Defines the User model
   class User < ActiveRecord::Base
     include Esquema::Model
   end

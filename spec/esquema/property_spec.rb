@@ -1,24 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Esquema::Property do
-  # Establish a connection to an in-memory SQLite database
-  ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
-
-  # Defines the schema for the 'users' table
-  ActiveRecord::Schema.define do
-    create_table :users do |t|
-      t.string :name
-      t.integer :group
-      t.date :dob
-      t.float :salary
-      t.boolean :active, default: false
-      t.text :bio
-      t.string :country, default: "United States of America"
-      t.json :preferences
-      t.timestamps
-    end
-  end
-
   # Defines the User model
   class User < ActiveRecord::Base
   end

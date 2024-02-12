@@ -36,4 +36,5 @@ Gem::Specification.new do |spec|
   # spec.add_dependency "example-gem", "~> 1.0"
   spec.add_dependency "rails", "~> 7.0"
   spec.add_development_dependency "pry-byebug"
+  spec.add_development_dependency "rake"
 end
