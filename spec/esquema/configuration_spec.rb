@@ -25,8 +25,12 @@ RSpec.describe Esquema::Configuration do
   end
 
   describe "default settings" do
-    it "has a default value for excluded_models" do
-      expect(Esquema.configuration.excluded_models).to eq([])
+    it "has a default value for exclude_associations" do
+      expect(Esquema.configuration.exclude_associations).to eq(false)
+    end
+
+    it "has a default value for exclude_foreign_keys" do
+      expect(Esquema.configuration.exclude_foreign_keys).to eq(true)
     end
 
     it "has a default value for excluded_columns" do
@@ -37,15 +41,15 @@ RSpec.describe Esquema::Configuration do
   describe "reseting" do
     before(:each) do
       Esquema.configure do |config|
-        config.excluded_models = ["User"]
+        config.exclude_associations = true
         config.excluded_columns = %i[id created_at updated_at deleted_at]
       end
     end
 
     it "resets the configuration to default" do
       Esquema.configuration.reset
-      expect(Esquema.configuration.excluded_models).to eq([])
       expect(Esquema.configuration.excluded_columns).to eq([])
+      expect(Esquema.configuration.exclude_associations).to eq(false)
       expect(Esquema.configuration.exclude_foreign_keys).to eq(true)
     end
   end
@@ -53,12 +57,12 @@ RSpec.describe Esquema::Configuration do
   describe "excluded model" do
     before(:each) do
       Esquema.configure do |config|
-        config.excluded_models = ["Abc::Task"]
+        config.exclude_associations = true
       end
     end
 
     it "does not include the excluded model in the schema" do
-      expect(Esquema.configuration.excluded_models).to eq(["Abc::Task"])
+      expect(Esquema.configuration.exclude_associations).to eq(true)
       expect(Abc::User.json_schema).not_to include_json({
                                                           properties: {
                                                             tasks: {
@@ -69,15 +73,15 @@ RSpec.describe Esquema::Configuration do
     end
   end
 
-  describe "include all models" do
+  describe "include associations" do
     before(:each) do
       Esquema.configure do |config|
-        config.excluded_models = []
+        config.exclude_associations = false
       end
     end
 
     it "does not include the excluded model in the schema" do
-      expect(Esquema.configuration.excluded_models).to eq([])
+      expect(Esquema.configuration.exclude_associations).to eq(false)
       expect(Abc::User.json_schema).to include_json({
                                                       properties: {
                                                         tasks: {

@@ -39,7 +39,7 @@ module Esquema
 
     def add_properties_from_has_many_associations
       has_many_associations.each do |association|
-        next if config.excluded_models.include?(association.klass.name)
+        next if config.exclude_associations?
 
         @properties[association.name] ||= Property.new(association)
       end
@@ -47,6 +47,8 @@ module Esquema
 
     def add_properties_from_has_one_associations
       has_one_associations.each do |association|
+        next if config.exclude_associations?
+
         klass = association.klass.name.constantize
         @properties[association.name] ||= self.class.new(klass).build_schema
       end

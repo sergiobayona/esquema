@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 Esquema.configure do |config|
-  # Excluded Models:
-  # Specify the models that you want to exclude from having Esquema functionality.
-  # This is useful for models that are not backed by a database table, or for models that are not relevant to the API.
-  # By default, all models are included.
-  config.exclude_models = []
+  # Exclude Associations:
+  # Exclude associated models from the json-schema output.
+  # By default, all associated models are included.
+  config.exclude_associations = false
 
   # Exclude Foreign Keys:
   # Specify whether or not to exclude foreign keys from the json-schema output.
