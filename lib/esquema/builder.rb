@@ -4,20 +4,22 @@ require_relative "property"
 
 module Esquema
   class Builder
-    attr_reader :model
+    attr_reader :model, :required_properties
 
     def initialize(model)
       raise ArgumentError, "Class is not an ActiveRecord model" unless model.ancestors.include? ActiveRecord::Base
 
       @model = model
       @properties = {}
+      @required_properties = []
     end
 
     def build_schema
       {
         title: model.name.humanize,
         type: "object",
-        properties: build_properties
+        properties: build_properties,
+        required: required_properties
       }
     end
 
@@ -33,6 +35,7 @@ module Esquema
       columns.each do |property|
         next if property.name.end_with?("_id") && config.exclude_foreign_keys?
 
+        required_properties << property.name
         @properties[property.name] ||= Property.new(property)
       end
     end

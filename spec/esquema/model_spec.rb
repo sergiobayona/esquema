@@ -12,6 +12,7 @@ RSpec.describe Esquema::Model do
   after { Esquema.configuration.reset }
 
   it "returns a ruby hash representing the schema_model properties" do
+    puts model.json_schema
     expect(model.json_schema).to include_json({
                                                 "title": "User",
                                                 "type": "object",
@@ -28,6 +29,35 @@ RSpec.describe Esquema::Model do
                                                     "type": "string",
                                                     "title": "Email"
                                                   },
+                                                  "group": {
+                                                    "type": "integer",
+                                                    "title": "Group"
+                                                  },
+                                                  "dob": {
+                                                    "type": "date",
+                                                    "title": "Dob"
+                                                  },
+                                                  "salary": {
+                                                    "type": "number",
+                                                    "title": "Salary"
+                                                  },
+                                                  "active": {
+                                                    "type": "boolean",
+                                                    "default": false,
+                                                    "title": "Active"
+                                                  },
+                                                  "bio": {
+                                                    "type": "string",
+                                                    "title": "Bio"
+                                                  },
+                                                  "country": {
+                                                    "type": "string",
+                                                    "default": "United States of America",
+                                                    "title": "Country"
+                                                  },
+                                                  "preferences": {
+                                                    "title": "Preferences"
+                                                  },
                                                   "created_at": {
                                                     "type": "date-time",
                                                     "title": "Created at"
@@ -36,7 +66,21 @@ RSpec.describe Esquema::Model do
                                                     "type": "date-time",
                                                     "title": "Updated at"
                                                   }
-                                                }
+                                                },
+                                                "required": %w[
+                                                  id
+                                                  name
+                                                  email
+                                                  group
+                                                  dob
+                                                  salary
+                                                  active
+                                                  bio
+                                                  country
+                                                  preferences
+                                                  created_at
+                                                  updated_at
+                                                ]
                                               })
   end
 
