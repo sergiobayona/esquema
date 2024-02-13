@@ -3,17 +3,23 @@
 require "spec_helper"
 
 RSpec.describe Esquema::Configuration do
-  module Abc
-    class User < ActiveRecord::Base
-      has_many :tasks, class_name: "Abc::Task"
+  User = Class.new(ActiveRecord::Base) do
+    include Esquema::Model
+    has_many :tasks
+    self.table_name = "users"
 
-      include Esquema::Model
+    def self.name
+      "User"
     end
+  end
 
-    class Task < ActiveRecord::Base
-      belongs_to :user, class_name: "Abc::User"
+  Task = Class.new(ActiveRecord::Base) do
+    include Esquema::Model
+    belongs_to :user
+    self.table_name = "tasks"
 
-      include Esquema::Model
+    def self.name
+      "Task"
     end
   end
 
@@ -23,15 +29,15 @@ RSpec.describe Esquema::Configuration do
   end
 
   describe "default settings" do
-    it "has a default value for exclude_associations" do
+    it "defaults to false for exclude_associations" do
       expect(Esquema.configuration.exclude_associations).to eq(false)
     end
 
-    it "has a default value for exclude_foreign_keys" do
+    it "defaults to true for exclude_foreign_keys" do
       expect(Esquema.configuration.exclude_foreign_keys).to eq(true)
     end
 
-    it "has a default value for excluded_columns" do
+    it "is empty for excluded_columns" do
       expect(Esquema.configuration.excluded_columns).to eq([])
     end
   end
@@ -52,7 +58,7 @@ RSpec.describe Esquema::Configuration do
     end
   end
 
-  describe "excluded model" do
+  describe "exclude associations" do
     before(:each) do
       Esquema.configure do |config|
         config.exclude_associations = true
@@ -61,13 +67,13 @@ RSpec.describe Esquema::Configuration do
 
     it "does not include the excluded model in the schema" do
       expect(Esquema.configuration.exclude_associations).to eq(true)
-      expect(Abc::User.json_schema).not_to include_json({
-                                                          properties: {
-                                                            tasks: {
-                                                              title: "Tasks"
-                                                            }
-                                                          }
-                                                        })
+      expect(User.json_schema).not_to include_json({
+                                                     properties: {
+                                                       tasks: {
+                                                         title: "Tasks"
+                                                       }
+                                                     }
+                                                   })
     end
   end
 
@@ -80,13 +86,13 @@ RSpec.describe Esquema::Configuration do
 
     it "does not include the excluded model in the schema" do
       expect(Esquema.configuration.exclude_associations).to eq(false)
-      expect(Abc::User.json_schema).to include_json({
-                                                      properties: {
-                                                        tasks: {
-                                                          title: "Tasks"
-                                                        }
-                                                      }
-                                                    })
+      expect(User.json_schema).to include_json({
+                                                 properties: {
+                                                   tasks: {
+                                                     title: "Tasks"
+                                                   }
+                                                 }
+                                               })
     end
   end
 
@@ -102,61 +108,61 @@ RSpec.describe Esquema::Configuration do
     end
 
     it "excludes columns from the schema" do
-      expect(Abc::Task.json_schema).not_to include_json({
-                                                          properties: {
-                                                            id: {
-                                                              title: "Id"
-                                                            },
-                                                            created_at: {
-                                                              title: "Created at"
-                                                            },
-                                                            updated_at: {
-                                                              title: "Updated at"
-                                                            }
-                                                          }
-                                                        })
+      expect(Task.json_schema).not_to include_json({
+                                                     properties: {
+                                                       id: {
+                                                         title: "Id"
+                                                       },
+                                                       created_at: {
+                                                         title: "Created at"
+                                                       },
+                                                       updated_at: {
+                                                         title: "Updated at"
+                                                       }
+                                                     }
+                                                   })
     end
   end
 
   describe "without excluded columns" do
     it "includes all columns in the schema" do
-      expect(Abc::User.json_schema).to include_json({
-                                                      properties: {
-                                                        id: {
-                                                          title: "Id"
-                                                        },
-                                                        name: {
-                                                          title: "Name"
-                                                        },
-                                                        group: {
-                                                          title: "Group"
-                                                        },
-                                                        dob: {
-                                                          title: "Dob"
-                                                        },
-                                                        salary: {
-                                                          title: "Salary"
-                                                        },
-                                                        active: {
-                                                          title: "Active"
-                                                        },
-                                                        bio: {
-                                                          title: "Bio"
-                                                        },
-                                                        country: {
-                                                          title: "Country"
-                                                        },
-                                                        preferences: {
-                                                          title: "Preferences"
-                                                        },
-                                                        created_at: {
-                                                          title: "Created at"
-                                                        },
-                                                        updated_at: {
-                                                          title: "Updated at"
-                                                        }
-                                                      }
-                                                    })
+      expect(User.json_schema).to include_json({
+                                                 properties: {
+                                                   id: {
+                                                     title: "Id"
+                                                   },
+                                                   name: {
+                                                     title: "Name"
+                                                   },
+                                                   group: {
+                                                     title: "Group"
+                                                   },
+                                                   dob: {
+                                                     title: "Dob"
+                                                   },
+                                                   salary: {
+                                                     title: "Salary"
+                                                   },
+                                                   active: {
+                                                     title: "Active"
+                                                   },
+                                                   bio: {
+                                                     title: "Bio"
+                                                   },
+                                                   country: {
+                                                     title: "Country"
+                                                   },
+                                                   preferences: {
+                                                     title: "Preferences"
+                                                   },
+                                                   created_at: {
+                                                     title: "Created at"
+                                                   },
+                                                   updated_at: {
+                                                     title: "Updated at"
+                                                   }
+                                                 }
+                                               })
     end
   end
 
@@ -172,13 +178,13 @@ RSpec.describe Esquema::Configuration do
     end
 
     it "includes foreign keys in the schema" do
-      expect(Abc::Task.json_schema).to include_json({
-                                                      properties: {
-                                                        user_id: {
-                                                          title: "User"
-                                                        }
-                                                      }
-                                                    })
+      expect(Task.json_schema).to include_json({
+                                                 properties: {
+                                                   user_id: {
+                                                     title: "User"
+                                                   }
+                                                 }
+                                               })
     end
   end
 end
