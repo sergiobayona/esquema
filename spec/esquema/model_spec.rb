@@ -12,7 +12,6 @@ RSpec.describe Esquema::Model do
   after { Esquema.configuration.reset }
 
   it "returns a ruby hash representing the schema_model properties" do
-    puts model.json_schema
     expect(model.json_schema).to include_json({
                                                 "title": "User",
                                                 "type": "object",
@@ -82,8 +81,5 @@ RSpec.describe Esquema::Model do
                                                   updated_at
                                                 ]
                                               })
-  end
-
-  context "" do
   end
 end

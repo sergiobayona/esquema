@@ -19,12 +19,13 @@ module Esquema
 
     ATTRS = %i[type default title description item_type items enum].freeze
     attr_accessor(*ATTRS)
-    attr_reader :property
+    attr_reader :property, :options
 
-    def initialize(property)
+    def initialize(property, options = {})
       raise ArgumentError, "property must have a name" unless property.respond_to?(:name)
 
       @property = property
+      @options = options
     end
 
     def as_json
@@ -37,13 +38,15 @@ module Esquema
     end
 
     def build_title
-      property.name.to_s.humanize
+      options[:title].presence || property.name.to_s.humanize
     end
 
     def build_default
       return unless property.respond_to?(:default)
 
-      @default = TypeCaster.cast(property.type, property.default) unless property.default.nil?
+      default_value = property.default || options[:default].presence
+
+      @default = TypeCaster.cast(property.type, default_value) unless default_value.nil?
     end
 
     def build_type
@@ -58,7 +61,9 @@ module Esquema
       @item_type = property.item_type if property.type == :array
     end
 
-    def build_description; end
+    def build_description
+      options[:description]
+    end
 
     def build_items
       return unless property.try(:collection?)
@@ -67,6 +72,8 @@ module Esquema
       @items = Builder.new(class_name).build_schema
     end
 
-    def build_enum; end
+    def build_enum
+      options[:enum]
+    end
   end
 end

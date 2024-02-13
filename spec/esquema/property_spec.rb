@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 RSpec.describe Esquema::Property do
   # Defines the User model
   class User < ActiveRecord::Base

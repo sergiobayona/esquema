@@ -18,7 +18,7 @@ RSpec.describe "A schema with multiple objects" do
   it "includes the associated model schema" do
     puts model.json_schema
     expect(model.json_schema).to include_json({
-                                                "title": "Foo::user",
+                                                "title": "User",
                                                 "type": "object",
                                                 "properties": {
                                                   "id": {
@@ -74,7 +74,7 @@ RSpec.describe "A schema with multiple objects" do
                                                     "type": "array",
                                                     "title": "Tasks",
                                                     "items": {
-                                                      "title": "Foo::task",
+                                                      "title": "Task",
                                                       "type": "object",
                                                       "properties": {
                                                         "id": {

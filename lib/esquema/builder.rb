@@ -15,12 +15,15 @@ module Esquema
     end
 
     def build_schema
-      {
-        title: model.name.humanize,
+      schema = {
+        title: build_title,
+        description: build_description,
         type: "object",
         properties: build_properties,
         required: required_properties
       }
+
+      schema.compact
     end
 
     def build_properties
@@ -36,7 +39,8 @@ module Esquema
         next if property.name.end_with?("_id") && config.exclude_foreign_keys?
 
         required_properties << property.name
-        @properties[property.name] ||= Property.new(property)
+        options = enhancement_for(property.name)
+        @properties[property.name] ||= Property.new(property, options)
       end
     end
 
@@ -61,6 +65,10 @@ module Esquema
       model.columns.reject { |c| excluded_column?(c.name) }
     end
 
+    def enhancement_for(property_name)
+      schema_enhancements&.dig(:properties, property_name.to_sym) || {}
+    end
+
     def has_many_associations
       model.reflect_on_all_associations(:has_many)
     end
@@ -75,8 +83,24 @@ module Esquema
       config.excluded_columns.include?(column_name.to_sym)
     end
 
+    def build_title
+      schema_enhancements[:model_title].presence || model.name.demodulize.humanize
+    end
+
+    def build_description
+      schema_enhancements[:model_description].presence
+    end
+
     def name
       model.name
+    end
+
+    def schema_enhancements
+      if model.respond_to?(:schema_enhancements)
+        model.schema_enhancements
+      else
+        {}
+      end
     end
 
     def config
