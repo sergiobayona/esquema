@@ -15,7 +15,7 @@ module Esquema
 
       def self.enhance_schema(&block)
         schema_enhancements
-        enhancer = SchemaEnhancer.new(@schema_enhancements)
+        enhancer = SchemaEnhancer.new(self, @schema_enhancements)
         enhancer.instance_eval(&block)
       end
 

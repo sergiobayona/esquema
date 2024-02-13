@@ -3,7 +3,7 @@
 require_relative "type_caster"
 module Esquema
   class Property
-    TYPE_MAPPINGS = {
+    DB_TO_JSON_TYPE_MAPPINGS = {
       date: "date",
       datetime: "date-time",
       time: "time",
@@ -50,9 +50,9 @@ module Esquema
     end
 
     def build_type
-      return TYPE_MAPPINGS[:array] if property.try(:collection?)
+      return DB_TO_JSON_TYPE_MAPPINGS[:array] if property.try(:collection?)
 
-      @type = TYPE_MAPPINGS[property.type]
+      @type = DB_TO_JSON_TYPE_MAPPINGS[property.type]
     end
 
     def build_item_type

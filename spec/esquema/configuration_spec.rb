@@ -2,8 +2,6 @@
 
 require "spec_helper"
 
-# Establish a connection to an in-memory SQLite database
-
 RSpec.describe Esquema::Configuration do
   module Abc
     class User < ActiveRecord::Base

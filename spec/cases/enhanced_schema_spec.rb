@@ -1,9 +1,16 @@
 # frozen_string_literal: true
 
-RSpec.describe "A schema with multiple objects" do
-  module Bar
-    class User < ActiveRecord::Base
+require "spec_helper"
+
+RSpec.describe "enhanced schema" do
+  subject(:model) do
+    Class.new(ActiveRecord::Base) do
       include Esquema::Model
+      self.table_name = "users"
+
+      def self.name
+        "User"
+      end
 
       enhance_schema do
         model_description "A user of the system"
@@ -12,8 +19,6 @@ RSpec.describe "A schema with multiple objects" do
       end
     end
   end
-
-  subject(:model) { Bar::User }
 
   it "includes the custom description" do
     expect(model.json_schema).to include_json({ title: "User", description: "A user of the system" })
@@ -31,7 +36,6 @@ RSpec.describe "A schema with multiple objects" do
   end
 
   it "includes the custom enum, default and description" do
-    puts model.json_schema
     expect(model.json_schema).to include_json({
                                                 properties: {
                                                   group: {
@@ -41,5 +45,49 @@ RSpec.describe "A schema with multiple objects" do
                                                   }
                                                 }
                                               })
+  end
+
+  context "model with mismatched default type" do
+    subject(:model) do
+      Class.new(ActiveRecord::Base) do
+        include Esquema::Model
+        self.table_name = "users"
+
+        def self.name
+          "User"
+        end
+
+        enhance_schema do
+          model_description "A user of the system"
+          property :name, default: 554
+        end
+      end
+    end
+
+    it "raises an error" do
+      expect { model.json_schema }.to raise_error(ArgumentError, "Default value must be of type string")
+    end
+  end
+
+  context "model with mismatched default type" do
+    subject(:model) do
+      Class.new(ActiveRecord::Base) do
+        include Esquema::Model
+        self.table_name = "users"
+
+        def self.name
+          "User"
+        end
+
+        enhance_schema do
+          model_description "A user of the system"
+          property :name, enum: [1, 2, 3]
+        end
+      end
+    end
+
+    it "raises an error" do
+      expect { model.json_schema }.to raise_error(ArgumentError, "Enum values must be of type string")
+    end
   end
 end

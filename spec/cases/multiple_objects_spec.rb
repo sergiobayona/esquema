@@ -16,7 +16,6 @@ RSpec.describe "A schema with multiple objects" do
   subject(:model) { Foo::User }
 
   it "includes the associated model schema" do
-    puts model.json_schema
     expect(model.json_schema).to include_json({
                                                 "title": "User",
                                                 "type": "object",
