@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "esquema"
+
 Esquema.configure do |config|
   # Exclude Associations:
   # Exclude associated models from the json-schema output.
