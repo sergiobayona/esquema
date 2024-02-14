@@ -50,16 +50,12 @@ Calling `User.json_schema` will return the JSON Schema for the User model:
 
 ## Installation
 
-Install the gem and add to the application's Gemfile by executing:
+ install the gem by executing:
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
-
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+    $ gem install esquema
 
 
-Execute the following command to install the gem and generate the configuration file:
+Run the following command to install the gem and generate the configuration file:
 
 ```bash
 rails generate esquema:install 
