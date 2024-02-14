@@ -10,7 +10,8 @@ RSpec.describe Esquema::Property do
   let(:model) { User }
 
   context "string column" do
-    let(:string_column) { User.columns.find { |c| c.name == "name" } }
+    let(:string_column) { User.column_for_attribute("name") }
+
     let(:property) { Esquema::Property.new(string_column) }
 
     it "includes the required keywords and values" do
@@ -19,7 +20,7 @@ RSpec.describe Esquema::Property do
   end
 
   context "integer column" do
-    let(:integer_column) { User.columns.find { |c| c.name == "group" } }
+    let(:integer_column) { User.column_for_attribute("group") }
     let(:property) { Esquema::Property.new(integer_column) }
 
     it "includes the required keywords and values" do
@@ -28,7 +29,7 @@ RSpec.describe Esquema::Property do
   end
 
   context "string column with default" do
-    let(:string_column) { User.columns.find { |c| c.name == "country" } }
+    let(:string_column) { User.column_for_attribute("country") }
     let(:property) { Esquema::Property.new(string_column) }
 
     it "includes the required keywords and values" do
@@ -41,7 +42,7 @@ RSpec.describe Esquema::Property do
   end
 
   context "boolean column with default value" do
-    let(:boolean_column) { User.columns.find { |c| c.name == "active" } }
+    let(:boolean_column) { User.column_for_attribute("active") }
 
     let(:property) { Esquema::Property.new(boolean_column) }
 
@@ -55,7 +56,7 @@ RSpec.describe Esquema::Property do
   end
 
   context "text column" do
-    let(:text_column) { User.columns.find { |c| c.name == "bio" } }
+    let(:text_column) { User.column_for_attribute("bio") }
 
     let(:property) { Esquema::Property.new(text_column) }
 
@@ -68,7 +69,7 @@ RSpec.describe Esquema::Property do
   end
 
   context "datetime column" do
-    let(:datetime_column) { User.columns.find { |c| c.name == "created_at" } }
+    let(:datetime_column) { User.column_for_attribute("created_at") }
 
     let(:property) { Esquema::Property.new(datetime_column) }
 
@@ -81,7 +82,7 @@ RSpec.describe Esquema::Property do
   end
 
   context "date column" do
-    let(:date_column) { User.columns.find { |c| c.name == "dob" } }
+    let(:date_column) { User.column_for_attribute("dob") }
 
     let(:property) { Esquema::Property.new(date_column) }
 
