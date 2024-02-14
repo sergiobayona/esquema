@@ -4,7 +4,7 @@ Esquema is a Ruby library for JSON Schema generation from ActiveRecord models.
 
 Esquema was designed with the following assumptions:
 
-- An ActiveRecord model represents a JSON object.
+- An ActiveRecord model represents a JSON Schema object.
 - The JSON object properties are a representation of the model's attributes.
 - The JSON Schema property types are inferred from the model's attribute types.
 - The model associations (has_many, belongs_to, etc.) are represented as subschemas in the JSON Schema.
