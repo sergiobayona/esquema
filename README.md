@@ -2,11 +2,21 @@
 
 Esquema is a Ruby library for JSON Schema generation from ActiveRecord models.
 
-Example:
+Esquema was designed with the following assumptions:
+
+- An ActiveRecord model represents a JSON object.
+- The JSON object properties are a representation of the model's attributes.
+- The JSON Schema property types are inferred from the model's attribute types.
+- The model associations (has_many, belongs_to, etc.) are represented as subschemas in the JSON Schema.
+- You can customize the generated schema by using the configuration file or the `enhance_schema` method.
+
+Example Use:
 
 ```ruby
 class User < ApplicationRecord
   include Esquema::Model
+
+    # Assuming the User db table has the following columns:
     # column :name, :string
     # column :email, :string
 
@@ -18,28 +28,23 @@ Calling `User.json_schema` will return the JSON Schema for the User model:
 
 ```json
 {
-  "title": "User model",
-  "description": "Schema representation of the User model",
-  "type": "object",
-  "properties": {
-    "id": {
-      "type": "integer"
+    "title": "User model",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "name": {
+            "type": "string"
+        },
+        "email": {
+            "type": "string"
+        }
     },
-    "name": {
-      "type": "string"
-    },
-    "email": {
-      "type": "string"
-    },
-    "created_at": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "updated_at": {
-      "type": "string",
-      "format": "date-time"
-    }
-  }
+    "required:": [
+        "name",
+        "email"
+    ]
 }
 ```
 
@@ -53,19 +58,40 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     $ gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
 
+
+Execute the following command to install the gem and generate the configuration file:
+
+```bash
+rails generate esquema:install 
+```
+
+This will generate a configuration file at:
+
+    <rails_app>/config/initializer/esquema.rb
+
+
 ## Usage
 
 Simply include the `Esquema::Model` module in your ActiveRecord model and call the `json_schema` method to generate the JSON Schema for the model.
 
 There are multiple ways to customize the generated schema:
-
-- Exclude columns by specifying the `exclude_columns` option on the configuration file at "<rails_app>/config/initializer/esquema.rb".
+- You can exclude columns, foreign keys, and associations from the schema. See the <rails_project>/config/initializer/esquema.rb configuration for more details.
+- For more complex customizations, you can use the `enhance_schema` method to modify the schema directly on the AR model. Here is an example:
 
 ```ruby
-    Esquema.configure do |config|
-    config.excluded_columns = %i[id created_at updated_at]
-    end
+class User < ApplicationRecord
+  include Esquema::Model
+
+  enhance_schema do
+    model_description "A user of the system"
+    property :name, description: "The user's name", title: "Full Name"
+    property :group, enum: [1, 2, 3], default: 1, description: "The user's group"
+  end
+end
 ```
+
+In the example above, the `enhance_schema` method is used to add a description to the model, change the title of the `name` property and add a description. It adds an enum, default value and a description to the `group` property.
+
 
 ## Development
 
@@ -75,12 +101,9 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/esquema. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/esquema/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/sergiobayona/esquema. 
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
-## Code of Conduct
-
-Everyone interacting in the Esquema project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/esquema/blob/master/CODE_OF_CONDUCT.md).
