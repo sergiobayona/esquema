@@ -69,7 +69,7 @@ RSpec.describe "enhanced schema" do
     end
   end
 
-  context "model with mismatched default type" do
+  context "model with mismatched enum type" do
     subject(:model) do
       Class.new(ActiveRecord::Base) do
         include Esquema::Model
@@ -88,6 +88,28 @@ RSpec.describe "enhanced schema" do
 
     it "raises an error" do
       expect { model.json_schema }.to raise_error(ArgumentError, "Enum values must be of type string")
+    end
+  end
+
+  context "model with mismatched enum type" do
+    subject(:model) do
+      Class.new(ActiveRecord::Base) do
+        include Esquema::Model
+        self.table_name = "users"
+
+        def self.name
+          "User"
+        end
+
+        enhance_schema do
+          model_description "A user of the system"
+          property :madeup_prop, enum: [1, 2, 3]
+        end
+      end
+    end
+
+    it "raises an error" do
+      expect { model.json_schema }.to raise_error(ArgumentError, "`madeup_prop` is not a valid property.")
     end
   end
 end

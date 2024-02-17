@@ -17,7 +17,7 @@ module Esquema
       object: "object"
     }.freeze
 
-    ATTRS = %i[type default title description item_type items enum].freeze
+    ATTRS = %i[type default title description items enum].freeze
     attr_accessor(*ATTRS)
     attr_reader :property, :options
 
@@ -52,13 +52,9 @@ module Esquema
     def build_type
       return DB_TO_JSON_TYPE_MAPPINGS[:array] if property.try(:collection?)
 
+      return unless property.respond_to?(:type)
+
       @type = DB_TO_JSON_TYPE_MAPPINGS[property.type]
-    end
-
-    def build_item_type
-      return unless property.respond_to?(:item_type)
-
-      @item_type = property.item_type if property.type == :array
     end
 
     def build_description
@@ -68,8 +64,12 @@ module Esquema
     def build_items
       return unless property.try(:collection?)
 
-      class_name = property.class_name.constantize
-      @items = Builder.new(class_name).build_schema
+      case property.type
+      when :array
+        { type: DB_TO_JSON_TYPE_MAPPINGS[property.item_type] }
+      else
+        Builder.new(property.klass).build_schema
+      end
     end
 
     def build_enum

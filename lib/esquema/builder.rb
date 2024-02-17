@@ -4,7 +4,7 @@ require_relative "property"
 
 module Esquema
   class Builder
-    attr_reader :model, :required_properties
+    attr_reader :model, :required_properties, :schema
 
     def initialize(model)
       raise ArgumentError, "Class is not an ActiveRecord model" unless model.ancestors.include? ActiveRecord::Base
@@ -15,23 +15,49 @@ module Esquema
     end
 
     def build_schema
-      schema = {
+      @schema ||= {
         title: build_title,
         description: build_description,
-        type: "object",
+        type: build_type,
         properties: build_properties,
         required: required_properties
-      }
-
-      schema.compact
+      }.compact
     end
 
     def build_properties
       add_properties_from_columns
-      add_properties_from_has_many_associations
-      add_properties_from_has_one_associations
-
+      add_properties_from_associations
+      add_virtual_properties
       @properties
+    end
+
+    def build_type
+      model.respond_to?(:type) ? model.type : "object"
+    end
+
+    def add_virtual_properties
+      return unless schema_enhancements[:properties]
+
+      virtual_properties = schema_enhancements[:properties].select { |_k, v| v[:virtual] }
+      required_properties.concat(virtual_properties.keys)
+
+      virtual_properties.each do |property_name, options|
+        virtual_prop = create_virtual_prop(property_name, options)
+        @properties[property_name] = Property.new(virtual_prop, options)
+      end
+    end
+
+    def create_virtual_prop(property_name, options)
+      OpenStruct.new(name: property_name.to_s,
+                     class_name: property_name.to_s.classify,
+                     type: options[:type],
+                     item_type: options[:items][:type],
+                     default: options[:default],
+                     title: options[:title],
+                     description: options[:description],
+                     enum: options[:enum],
+                     columns: [],
+                     collection?: options[:type] == :array)
     end
 
     def add_properties_from_columns
@@ -44,20 +70,11 @@ module Esquema
       end
     end
 
-    def add_properties_from_has_many_associations
-      has_many_associations.each do |association|
+    def add_properties_from_associations
+      associations.each do |association|
         next if config.exclude_associations?
 
         @properties[association.name] ||= Property.new(association)
-      end
-    end
-
-    def add_properties_from_has_one_associations
-      has_one_associations.each do |association|
-        next if config.exclude_associations?
-
-        klass = association.klass.name.constantize
-        @properties[association.name] ||= self.class.new(klass).build_schema
       end
     end
 
@@ -66,15 +83,13 @@ module Esquema
     end
 
     def enhancement_for(property_name)
-      schema_enhancements&.dig(:properties, property_name.to_sym) || {}
+      schema_enhancements.dig(:properties, property_name.to_sym) || {}
     end
 
-    def has_many_associations
-      model.reflect_on_all_associations(:has_many)
-    end
+    def associations
+      return [] unless model.respond_to?(:reflect_on_all_associations)
 
-    def has_one_associations
-      model.reflect_on_all_associations(:has_one)
+      model.reflect_on_all_associations
     end
 
     def excluded_column?(column_name)

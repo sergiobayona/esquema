@@ -18,7 +18,8 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  config.before(:suite) do
+  config.before(:each) do
+    ActiveRecord::Base.logger = Logger.new(STDOUT) # Add this line
     ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
     ActiveRecord::Tasks::DatabaseTasks.drop_all
     ActiveRecord::Schema.define do
