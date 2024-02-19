@@ -18,6 +18,20 @@ module Esquema
         rescue StandardError
           nil
         end
+      when :number
+        if value.to_s.include?(".")
+          begin
+            Float(value)
+          rescue StandardError
+            nil
+          end
+        else
+          begin
+            Integer(value)
+          rescue StandardError
+            nil
+          end
+        end
       when :boolean
         case value
         when true, "true", "1", 1

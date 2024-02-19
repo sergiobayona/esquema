@@ -35,6 +35,8 @@ module Esquema
       model.respond_to?(:type) ? model.type : "object"
     end
 
+    private
+
     def add_virtual_properties
       return unless schema_enhancements[:properties]
 
@@ -51,7 +53,7 @@ module Esquema
       OpenStruct.new(name: property_name.to_s,
                      class_name: property_name.to_s.classify,
                      type: options[:type],
-                     item_type: options[:items][:type],
+                     item_type: options.dig(:items, :type),
                      default: options[:default],
                      title: options[:title],
                      description: options[:description],
@@ -104,10 +106,6 @@ module Esquema
 
     def build_description
       schema_enhancements[:model_description].presence
-    end
-
-    def name
-      model.name
     end
 
     def schema_enhancements

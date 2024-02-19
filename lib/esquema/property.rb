@@ -11,6 +11,7 @@ module Esquema
       text: "string",
       integer: "integer",
       float: "number",
+      number: "number",
       decimal: "number",
       boolean: "boolean",
       array: "array",
