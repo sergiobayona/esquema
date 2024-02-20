@@ -2,7 +2,8 @@
 
 module Esquema
   # The KeywordValidator module provides functionality for validating schema keyword values.
-  # There are three types of keyword values that must be validated against the type of the property they are associated with:
+  # There are three types of keyword values that must be validated against the type of the
+  # property they are associated with:
   # - default: The default value for a property.
   # - enum: The allowed values for a property.
   # - const: The constant value for a property.
@@ -39,7 +40,7 @@ module Esquema
     # @raise [ArgumentError] If the property name is not a symbol.
     # @raise [ArgumentError] If the property type is not a symbol.
     # @raise [ArgumentError] If the type is unknown.
-    def self.validate!(property_name, type, options)
+    def self.validate!(property_name, type, options) # rubocop:disable Metrics/AbcSize
       options.assert_valid_keys(VALID_OPTIONS)
       raise ArgumentError, "Property must be a symbol" unless property_name.is_a?(Symbol)
       raise ArgumentError, "Property type must be a symbol" unless type.is_a?(Symbol)

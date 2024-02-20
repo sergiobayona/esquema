@@ -2,7 +2,9 @@
 
 require_relative "type_caster"
 module Esquema
+  # Represents a property in the Esquema schema.
   class Property
+    # Mapping of database types to JSON types.
     DB_TO_JSON_TYPE_MAPPINGS = {
       date: "date",
       datetime: "date-time",
@@ -18,10 +20,18 @@ module Esquema
       object: "object"
     }.freeze
 
+    # List of attribute names for the Property class.
     ATTRS = %i[type default title description items enum].freeze
+
+    # Accessors for the attributes.
     attr_accessor(*ATTRS)
     attr_reader :property, :options
 
+    # Initializes a new Property instance.
+    #
+    # @param property [Object] The property object.
+    # @param options [Hash] Additional options for the property.
+    # @raise [ArgumentError] If the property does not have a name.
     def initialize(property, options = {})
       raise ArgumentError, "property must have a name" unless property.respond_to?(:name)
 
@@ -29,6 +39,9 @@ module Esquema
       @options = options
     end
 
+    # Converts the Property instance to a JSON representation.
+    #
+    # @return [Hash] The JSON representation of the Property.
     def as_json
       ATTRS.each_with_object({}) do |property, hash|
         value = send("build_#{property}")
@@ -38,10 +51,16 @@ module Esquema
       end.compact
     end
 
+    # Builds the title attribute for the Property.
+    #
+    # @return [String] The title attribute.
     def build_title
       options[:title].presence || property.name.to_s.humanize
     end
 
+    # Builds the default attribute for the Property.
+    #
+    # @return [Object, nil] The default attribute.
     def build_default
       return unless property.respond_to?(:default)
 
@@ -50,6 +69,9 @@ module Esquema
       @default = TypeCaster.cast(property.type, default_value) unless default_value.nil?
     end
 
+    # Builds the type attribute for the Property.
+    #
+    # @return [String, nil] The type attribute.
     def build_type
       return DB_TO_JSON_TYPE_MAPPINGS[:array] if property.try(:collection?)
 
@@ -58,10 +80,16 @@ module Esquema
       @type = DB_TO_JSON_TYPE_MAPPINGS[property.type]
     end
 
+    # Builds the description attribute for the Property.
+    #
+    # @return [String, nil] The description attribute.
     def build_description
       options[:description]
     end
 
+    # Builds the items attribute for the Property.
+    #
+    # @return [Hash, nil] The items attribute.
     def build_items
       return unless property.try(:collection?)
 
@@ -73,6 +101,9 @@ module Esquema
       end
     end
 
+    # Builds the enum attribute for the Property.
+    #
+    # @return [Array, nil] The enum attribute.
     def build_enum
       options[:enum]
     end

@@ -4,5 +4,5 @@ require_relative "esquema/version"
 require_relative "esquema/configuration"
 require_relative "esquema/model"
 
-module Esquema
+module Esquema # rubocop:disable Style/Documentation
 end
