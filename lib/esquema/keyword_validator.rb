@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Esquema
   # The KeywordValidator module provides functionality for validating schema keyword values.
   # There are three types of keyword values that must be validated against the type of the property they are associated with:

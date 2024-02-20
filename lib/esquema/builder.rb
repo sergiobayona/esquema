@@ -15,7 +15,7 @@ module Esquema
     end
 
     def build_schema
-      @schema ||= {
+      @build_schema ||= {
         title: build_title,
         description: build_description,
         type: build_type,
