@@ -2,6 +2,7 @@ AllCops:
   TargetRubyVersion: 3.2
   Exclude:
     - 'spec/support/matchers/**'
+    - 'vendor/**/*'
 
 Style/StringLiterals:
   Enabled: true
