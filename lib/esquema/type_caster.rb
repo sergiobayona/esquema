@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Esquema
-  module TypeCaster
-    def self.cast(type, value) # rubocop:disable Metrics/MethodLength
+  module TypeCaster # rubocop:disable Style/Documentation
+    def self.cast(type, value) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
       case type
       when :string, :text
         value.to_s
@@ -38,8 +38,6 @@ module Esquema
           true
         when false, "false", "0", 0
           false
-        else
-          nil # or handle as desired
         end
       when :array
         Array(value)
