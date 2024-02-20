@@ -3,7 +3,7 @@
 require "spec_helper"
 
 RSpec.describe Esquema::Model do
-  User = Class.new(ActiveRecord::Base) do
+  user = Class.new(ActiveRecord::Base) do
     include Esquema::Model
     self.table_name = "users"
 
@@ -15,7 +15,7 @@ RSpec.describe Esquema::Model do
   after { Esquema.configuration.reset }
 
   it "returns a ruby hash representing the schema_model properties" do
-    expect(User.json_schema).to include_json({
+    expect(user.json_schema).to include_json({
                                                "title": "User",
                                                "type": "object",
                                                "properties": {

@@ -3,14 +3,10 @@
 require "spec_helper"
 
 RSpec.describe Esquema::Property do
-  # Defines the User model
-  class User < ActiveRecord::Base
-  end
-
-  let(:model) { User }
+  let(:user) { stub_const "User", Class.new(ActiveRecord::Base) }
 
   context "string column" do
-    let(:string_column) { User.column_for_attribute("name") }
+    let(:string_column) { user.column_for_attribute("name") }
 
     let(:property) { Esquema::Property.new(string_column) }
 
@@ -20,7 +16,7 @@ RSpec.describe Esquema::Property do
   end
 
   context "integer column" do
-    let(:integer_column) { User.column_for_attribute("group") }
+    let(:integer_column) { user.column_for_attribute("group") }
     let(:property) { Esquema::Property.new(integer_column) }
 
     it "includes the required keywords and values" do
@@ -29,7 +25,7 @@ RSpec.describe Esquema::Property do
   end
 
   context "string column with default" do
-    let(:string_column) { User.column_for_attribute("country") }
+    let(:string_column) { user.column_for_attribute("country") }
     let(:property) { Esquema::Property.new(string_column) }
 
     it "includes the required keywords and values" do
@@ -42,7 +38,7 @@ RSpec.describe Esquema::Property do
   end
 
   context "boolean column with default value" do
-    let(:boolean_column) { User.column_for_attribute("active") }
+    let(:boolean_column) { user.column_for_attribute("active") }
 
     let(:property) { Esquema::Property.new(boolean_column) }
 
@@ -56,7 +52,7 @@ RSpec.describe Esquema::Property do
   end
 
   context "text column" do
-    let(:text_column) { User.column_for_attribute("bio") }
+    let(:text_column) { user.column_for_attribute("bio") }
 
     let(:property) { Esquema::Property.new(text_column) }
 
@@ -69,7 +65,7 @@ RSpec.describe Esquema::Property do
   end
 
   context "datetime column" do
-    let(:datetime_column) { User.column_for_attribute("created_at") }
+    let(:datetime_column) { user.column_for_attribute("created_at") }
 
     let(:property) { Esquema::Property.new(datetime_column) }
 
@@ -82,7 +78,7 @@ RSpec.describe Esquema::Property do
   end
 
   context "date column" do
-    let(:date_column) { User.column_for_attribute("dob") }
+    let(:date_column) { user.column_for_attribute("dob") }
 
     let(:property) { Esquema::Property.new(date_column) }
 
