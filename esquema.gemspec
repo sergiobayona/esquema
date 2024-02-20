@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = "Generate json-schema from ActiveRecord models."
   spec.homepage = "https://github.com/sergiobayona/esquema"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 3.2"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
 

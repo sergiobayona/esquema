@@ -105,7 +105,7 @@ PLATFORMS
 DEPENDENCIES
   esquema!
   pry-byebug (>= 3.10.1)
-  rake (~> 13.0)
+  rake (~> 13.1)
   rspec (~> 3.0)
   rubocop (~> 1.21)
   sqlite3
