@@ -5,7 +5,7 @@ require_relative "property"
 module Esquema
   # The Builder class is responsible for building a schema for an ActiveRecord model.
   class Builder
-    attr_reader :model, :required_properties, :schema
+    attr_reader :model, :required_properties
 
     def initialize(model)
       raise ArgumentError, "Class is not an ActiveRecord model" unless model.ancestors.include? ActiveRecord::Base
@@ -26,6 +26,11 @@ module Esquema
         properties: build_properties,
         required: required_properties
       }.compact
+    end
+
+    # @return [Hash] The schema for the ActiveRecord model.
+    def schema
+      build_schema
     end
 
     # Builds the properties for the schema.
