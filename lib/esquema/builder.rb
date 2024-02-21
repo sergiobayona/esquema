@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "property"
+require_relative "virtual_column"
 
 module Esquema
   # The Builder class is responsible for building a schema for an ActiveRecord model.
@@ -60,27 +61,9 @@ module Esquema
       required_properties.concat(virtual_properties.keys)
 
       virtual_properties.each do |property_name, options|
-        virtual_prop = create_virtual_prop(property_name, options)
-        @properties[property_name] = Property.new(virtual_prop, options)
+        virtual_col = VirtualColumn.new(property_name, options)
+        @properties[property_name] = Property.new(virtual_col, options)
       end
-    end
-
-    # Creates a virtual property.
-    #
-    # @param property_name [Symbol] The name of the property.
-    # @param options [Hash] The options for the property.
-    # @return [OpenStruct] The created virtual property.
-    def create_virtual_prop(property_name, options)
-      OpenStruct.new(name: property_name.to_s,
-                     class_name: property_name.to_s.classify,
-                     type: options[:type],
-                     item_type: options.dig(:items, :type),
-                     default: options[:default],
-                     title: options[:title],
-                     description: options[:description],
-                     enum: options[:enum],
-                     columns: [],
-                     collection?: options[:type] == :array)
     end
 
     # Adds properties from columns to the schema.

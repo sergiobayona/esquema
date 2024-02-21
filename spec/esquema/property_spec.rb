@@ -3,90 +3,104 @@
 require "spec_helper"
 
 RSpec.describe Esquema::Property do
-  let(:user) { stub_const "User", Class.new(ActiveRecord::Base) }
+  let(:object) { double("object") }
+  let(:options) { {} }
+  subject { described_class.new(object, options) }
 
-  context "string column" do
-    let(:string_column) { user.column_for_attribute("name") }
+  describe "#initialize" do
+    context "when property has a name" do
+      before { allow(object).to receive(:respond_to?).with(:name).and_return(true) }
 
-    let(:property) { Esquema::Property.new(string_column) }
+      it "sets the property and options" do
+        expect(subject.object).to eq(object)
+        expect(subject.options).to eq(options)
+      end
+    end
 
-    it "includes the required keywords and values" do
-      expect(property.as_json).to eq({ type: "string", title: "Name" })
+    context "when property does not have a name" do
+      before { allow(object).to receive(:respond_to?).with(:name).and_return(false) }
+
+      it "raises an ArgumentError" do
+        expect { subject }.to raise_error(ArgumentError, "property must have a name")
+      end
     end
   end
 
-  context "integer column" do
-    let(:integer_column) { user.column_for_attribute("group") }
-    let(:property) { Esquema::Property.new(integer_column) }
+  context "when property is an ActiveRecord column" do
+    let(:user) { stub_const "User", Class.new(ActiveRecord::Base) }
+    let(:property) { Esquema::Property.new(column) }
 
-    it "includes the required keywords and values" do
-      expect(property.as_json).to eq({ type: "integer", title: "Group" })
+    context "string column" do
+      let(:column) { user.column_for_attribute("name") }
+
+      it "includes the required keywords and values" do
+        expect(property.as_json).to eq({ type: "string", title: "Name" })
+      end
     end
-  end
 
-  context "string column with default" do
-    let(:string_column) { user.column_for_attribute("country") }
-    let(:property) { Esquema::Property.new(string_column) }
+    context "integer column" do
+      let(:column) { user.column_for_attribute("group") }
 
-    it "includes the required keywords and values" do
-      expect(property.as_json).to eq({
-                                       type: "string",
-                                       title: "Country",
-                                       default: "United States of America"
-                                     })
+      it "includes the required keywords and values" do
+        expect(property.as_json).to eq({ type: "integer", title: "Group" })
+      end
     end
-  end
 
-  context "boolean column with default value" do
-    let(:boolean_column) { user.column_for_attribute("active") }
+    context "string column with default" do
+      let(:column) { user.column_for_attribute("country") }
 
-    let(:property) { Esquema::Property.new(boolean_column) }
-
-    it "includes the required keywords and values" do
-      expect(property.as_json).to eq({
-                                       type: "boolean",
-                                       title: "Active",
-                                       default: false
-                                     })
+      it "includes the required keywords and values" do
+        expect(property.as_json).to eq({
+                                         type: "string",
+                                         title: "Country",
+                                         default: "United States of America"
+                                       })
+      end
     end
-  end
 
-  context "text column" do
-    let(:text_column) { user.column_for_attribute("bio") }
+    context "boolean column with default value" do
+      let(:column) { user.column_for_attribute("active") }
 
-    let(:property) { Esquema::Property.new(text_column) }
-
-    it "includes the required keywords and values" do
-      expect(property.as_json).to eq({
-                                       type: "string",
-                                       title: "Bio"
-                                     })
+      it "includes the required keywords and values" do
+        expect(property.as_json).to eq({
+                                         type: "boolean",
+                                         title: "Active",
+                                         default: false
+                                       })
+      end
     end
-  end
 
-  context "datetime column" do
-    let(:datetime_column) { user.column_for_attribute("created_at") }
+    context "text column" do
+      let(:column) { user.column_for_attribute("bio") }
 
-    let(:property) { Esquema::Property.new(datetime_column) }
-
-    it "includes the required keywords and values" do
-      expect(property.as_json).to eq({
-                                       type: "date-time",
-                                       title: "Created at"
-                                     })
+      it "includes the required keywords and values" do
+        expect(property.as_json).to eq({
+                                         type: "string",
+                                         title: "Bio"
+                                       })
+      end
     end
-  end
 
-  context "date column" do
-    let(:date_column) { user.column_for_attribute("dob") }
+    context "date column" do
+      let(:column) { user.column_for_attribute("dob") }
 
-    let(:property) { Esquema::Property.new(date_column) }
+      it "includes the required keywords and values" do
+        expect(property.as_json).to eq({
+                                         type: "date",
+                                         title: "Dob"
+                                       })
+      end
+    end
 
-    it "includes the required keywords and values" do
-      expect(property.as_json).to eq({
-                                       type: "date",
-                                       title: "Dob"
-                                     })
+    context "datetime column" do
+      let(:column) { user.column_for_attribute("created_at") }
+
+      it "includes the required keywords and values" do
+        expect(property.as_json).to eq({
+                                         type: "date-time",
+                                         title: "Created at"
+                                       })
+      end
     end
   end
 end
