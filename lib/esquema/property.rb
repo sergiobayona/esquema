@@ -37,9 +37,6 @@ module Esquema
     # @param options [Hash] Additional options for the property.
     # @raise [ArgumentError] If the property does not have a name.
     def initialize(object, options = {})
-      puts "*********************************"
-      puts "property: #{object.inspect}"
-      puts "*********************************"
       raise ArgumentError, "property must have a name" unless object.respond_to?(:name)
 
       @object = object
