@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Esquema::Builder do
   let(:model) { double("Model") }
   let(:builder) { described_class.new(model) }

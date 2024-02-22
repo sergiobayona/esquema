@@ -161,9 +161,13 @@ module Esquema
       options[:format]
     end
 
-    def build_maxitems
+    def build_maxitems # rubocop:disable Metrics/AbcSize
       raise ArgumentError, "maxItems must be an integer" if options[:maxItems] && !options[:maxItems].is_a?(Integer)
-      raise ArgumentError, "maxItems must be a non-negative integer" if options[:maxItems] && options[:maxItems] < 0
+
+      if options[:maxItems]&.negative?
+        raise ArgumentError,
+              "maxItems must be a non-negative integer"
+      end
 
       if options[:maxItems] && options[:type] != :array
         raise ArgumentError, "maxItems must be use for array type properties only."
@@ -172,9 +176,13 @@ module Esquema
       options[:maxItems]
     end
 
-    def build_minitems
+    def build_minitems # rubocop:disable Metrics/AbcSize
       raise ArgumentError, "minItems must be an integer" if options[:minItems] && !options[:minItems].is_a?(Integer)
-      raise ArgumentError, "minItems must be a non-negative integer" if options[:minItems] && options[:minItems] < 0
+
+      if options[:minItems]&.negative?
+        raise ArgumentError,
+              "minItems must be a non-negative integer"
+      end
 
       if options[:minItems] && options[:type] != :array
         raise ArgumentError, "minItems must be use for array type properties only."

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 module Esquema
-  class VirtualColumn
+  class VirtualColumn # rubocop:disable Style/Documentation
     def initialize(property_name, options = {})
       @property_name = property_name
       @options = options
