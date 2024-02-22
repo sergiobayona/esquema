@@ -1,26 +1,12 @@
+# frozen_string_literal: true
+
 require "date"
 require "bigdecimal"
+require_relative "keyword_validator"
 
 module Esquema
+  # The SchemaEnhancer class is responsible for enhancing the schema of a model.
   class SchemaEnhancer
-    VALID_OPTIONS = %i[title description maxLength minLength pattern maxItems minItems uniqueItems
-                       maxProperties minProperties properties additionalProperties dependencies
-                       enum format multipleOf maximum exclusiveMaximum minimum exclusiveMinimum
-                       const allOf anyOf oneOf not default].freeze
-
-    TYPE_MAPPINGS = {
-      date: Date,
-      datetime: DateTime,
-      time: Time,
-      string: String,
-      text: String,
-      integer: Integer,
-      float: Float,
-      decimal: BigDecimal,
-      boolean: [TrueClass, FalseClass],
-      array: Array,
-      object: Object
-    }.freeze
     attr_reader :model
 
     def initialize(model, schema_enhancements)
@@ -28,38 +14,77 @@ module Esquema
       @model = model
     end
 
+    # Sets the description for the model.
+    #
+    # @param description [String] The description of the model.
     def model_description(description)
       @schema_enhancements[:model_description] = description
     end
 
+    # Sets the title for the model.
+    #
+    # @param title [String] The title of the model.
     def model_title(title)
       @schema_enhancements[:model_title] = title
     end
 
+    # Adds a property to the schema.
+    #
+    # @param name [Symbol] The name of the property.
+    # @param options [Hash] Additional options for the property.
     def property(name, options = {})
-      db_type = model.type_for_attribute(name).type
-      klass_type = Array(TYPE_MAPPINGS[db_type])
+      validate_property_as_attribute_for(name, options)
 
-      validate_default_value(options[:default], klass_type, db_type)
-      validate_enum_values(options[:enum], klass_type, db_type)
+      type = resolve_type(name, options)
 
-      options.assert_valid_keys(VALID_OPTIONS)
+      KeywordValidator.validate!(name, type, options)
+
       @schema_enhancements[:properties] ||= {}
       @schema_enhancements[:properties][name] = options
     end
 
-    private
-
-    def validate_default_value(default_value, klass_type, db_type)
-      return unless default_value.present? && !klass_type.include?(default_value.class)
-
-      raise ArgumentError, "Default value must be of type #{db_type}"
+    # Adds a virtual property to the schema.
+    #
+    # @param name [Symbol] The name of the virtual property.
+    # @param options [Hash] Additional options for the virtual property.
+    def virtual_property(name, options = {})
+      options[:virtual] = true
+      property(name, options)
     end
 
-    def validate_enum_values(enum_values, klass_type, db_type)
-      return unless enum_values.present? && !enum_values.all? { |value| klass_type.include?(value.class) }
+    private
 
-      raise ArgumentError, "Enum values must be of type #{db_type}"
+    # Resolves the type of a property.
+    #
+    # @param name [Symbol] The name of the property.
+    # @param options [Hash] Additional options for the property.
+    # @return [Symbol] The resolved type of the property.
+    def resolve_type(name, options = {})
+      if options[:virtual] == true
+        options[:type]
+      else
+        model.type_for_attribute(name).type
+      end
+    end
+
+    # Retrieves the valid properties for the model.
+    #
+    # @return [Array<Symbol>] The valid properties for the model.
+    def valid_properties
+      @valid_properties ||= begin
+        properties = model.column_names + model.reflect_on_all_associations.map(&:name)
+        properties.map(&:to_sym)
+      end
+    end
+
+    # Validates that a property is a valid attribute for the model.
+    #
+    # @param prop_name [Symbol] The name of the property.
+    # @param options [Hash] Additional options for the property.
+    # @raise [ArgumentError] If the property is not a valid attribute for the model.
+    def validate_property_as_attribute_for(prop_name, options = {})
+      return if options[:virtual] == true
+      raise ArgumentError, "`#{prop_name}` is not a model attribute." unless valid_properties.include?(prop_name.to_sym)
     end
   end
 end

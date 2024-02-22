@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Esquema
-  module TypeCaster
-    def self.cast(type, value) # rubocop:disable Metrics/MethodLength
+  module TypeCaster # rubocop:disable Style/Documentation
+    def self.cast(type, value) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
       case type
       when :string, :text
         value.to_s
@@ -18,14 +18,26 @@ module Esquema
         rescue StandardError
           nil
         end
+      when :number
+        if value.to_s.include?(".")
+          begin
+            Float(value)
+          rescue StandardError
+            nil
+          end
+        else
+          begin
+            Integer(value)
+          rescue StandardError
+            nil
+          end
+        end
       when :boolean
         case value
         when true, "true", "1", 1
           true
         when false, "false", "0", 0
           false
-        else
-          nil # or handle as desired
         end
       when :array
         Array(value)

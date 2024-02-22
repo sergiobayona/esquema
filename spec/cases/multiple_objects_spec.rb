@@ -13,7 +13,7 @@ module Multi
   end
 end
 
-RSpec.describe "A schema with multiple objects" do
+RSpec.describe "A schema with a nested object" do
   it "includes the associated model schema" do
     expect(Multi::User.json_schema).to include_json({
                                                       "title": "User",

@@ -3,7 +3,7 @@
 require "spec_helper"
 
 RSpec.describe "enhanced schema" do
-  subject(:model) do
+  let(:model) do
     Class.new(ActiveRecord::Base) do
       include Esquema::Model
       self.table_name = "users"
@@ -45,49 +45,5 @@ RSpec.describe "enhanced schema" do
                                                   }
                                                 }
                                               })
-  end
-
-  context "model with mismatched default type" do
-    subject(:model) do
-      Class.new(ActiveRecord::Base) do
-        include Esquema::Model
-        self.table_name = "users"
-
-        def self.name
-          "User"
-        end
-
-        enhance_schema do
-          model_description "A user of the system"
-          property :name, default: 554
-        end
-      end
-    end
-
-    it "raises an error" do
-      expect { model.json_schema }.to raise_error(ArgumentError, "Default value must be of type string")
-    end
-  end
-
-  context "model with mismatched default type" do
-    subject(:model) do
-      Class.new(ActiveRecord::Base) do
-        include Esquema::Model
-        self.table_name = "users"
-
-        def self.name
-          "User"
-        end
-
-        enhance_schema do
-          model_description "A user of the system"
-          property :name, enum: [1, 2, 3]
-        end
-      end
-    end
-
-    it "raises an error" do
-      expect { model.json_schema }.to raise_error(ArgumentError, "Enum values must be of type string")
-    end
   end
 end

@@ -5,10 +5,10 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in esquema.gemspec
 gemspec
 
-gem "rake", "~> 13.0"
-
-gem "rspec", "~> 3.0"
-
-gem "rubocop", "~> 1.21"
-
+gem "pry-byebug", ">= 3.10.1"
+gem "rspec", "~> 3.13", require: false
+gem "rubocop", "~> 1.60", require: false
+gem "sorbet", group: :development
+gem "sorbet-runtime"
 gem "sqlite3"
+gem "tapioca", require: false, group: %i[development test]

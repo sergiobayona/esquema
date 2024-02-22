@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-module Esquema
+module Esquema # rubocop:disable Style/Documentation
+  # The Configuration module provides configuration options for the gem.
   class Configuration
     attr_accessor :exclude_associations, :exclude_foreign_keys, :excluded_columns
 

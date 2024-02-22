@@ -7,7 +7,7 @@ Esquema was designed with the following assumptions:
 - An ActiveRecord model represents a JSON Schema object.
 - The JSON object properties are a representation of the model's attributes.
 - The JSON Schema property types are inferred from the model's attribute types.
-- The model associations (has_many, belongs_to, etc.) are represented as subschemas in the JSON Schema.
+- The model associations (has_many, belongs_to, etc.) are represented as subschemas or nested schema objects.
 - You can customize the generated schema by using the configuration file or the `enhance_schema` method.
 
 Example Use:
@@ -82,11 +82,17 @@ class User < ApplicationRecord
     model_description "A user of the system"
     property :name, description: "The user's name", title: "Full Name"
     property :group, enum: [1, 2, 3], default: 1, description: "The user's group"
+    property :email, description: "The user's email", format: "email"
+    virtual_property :age, type: "integer", minimum: 18, maximum: 100, description: "The user's age"
   end
 end
 ```
 
 In the example above, the `enhance_schema` method is used to add a description to the model, change the title of the `name` property and add a description. It adds an enum, default value and a description to the `group` property.
+
+Use the `property` keyword for the existing model attributes. In other words the symbol passed to the `property` method must be a column in the table that the model represents. Property does not accept a `type` argument, as the type is inferred from the column type.
+
+Use the `virtual_property` keyword for properties that are not columns in the table that the model represents. Virtual properties require a `type` argument, as the type cannot be inferred.
 
 
 ## Development

@@ -3,7 +3,7 @@
 require "spec_helper"
 
 RSpec.describe Esquema::Model do
-  User = Class.new(ActiveRecord::Base) do
+  user = Class.new(ActiveRecord::Base) do
     include Esquema::Model
     self.table_name = "users"
 
@@ -14,8 +14,30 @@ RSpec.describe Esquema::Model do
 
   after { Esquema.configuration.reset }
 
+  describe ".schema_enhancements" do
+    it "returns the schema enhancements" do
+      expect(user.schema_enhancements).to eq({})
+    end
+  end
+
+  describe ".enhance_schema" do
+    it "enhances the schema using the provided block" do
+      user.enhance_schema do
+        property :name, title: "Person's Name"
+        property :email, title: "Person's Mailing Address"
+      end
+
+      expect(user.schema_enhancements).to eq(
+        properties: {
+          name: { title: "Person's Name" },
+          email: { title: "Person's Mailing Address" }
+        }
+      )
+    end
+  end
+
   it "returns a ruby hash representing the schema_model properties" do
-    expect(User.json_schema).to include_json({
+    expect(user.json_schema).to include_json({
                                                "title": "User",
                                                "type": "object",
                                                "properties": {

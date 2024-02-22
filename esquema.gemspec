@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = "Generate json-schema from ActiveRecord models."
   spec.homepage = "https://github.com/sergiobayona/esquema"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 3.2"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "rails", "~> 7.0"
+  spec.add_dependency "activerecord", "~> 7.1"
   spec.add_development_dependency "pry-byebug", ">= 3.10.1"
   spec.add_development_dependency "rake", "~> 13.1"
 end
