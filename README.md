@@ -82,7 +82,8 @@ class User < ApplicationRecord
     model_description "A user of the system"
     property :name, description: "The user's name", title: "Full Name"
     property :group, enum: [1, 2, 3], default: 1, description: "The user's group"
-    virtual_property :age, type: "integer", description: "The user's age"
+    property :email, description: "The user's email", format: "email"
+    virtual_property :age, type: "integer", minimum: 18, maximum: 100, description: "The user's age"
   end
 end
 ```
@@ -91,7 +92,7 @@ In the example above, the `enhance_schema` method is used to add a description t
 
 Use the `property` keyword for the existing model attributes. In other words the symbol passed to the `property` method must be a column in the table that the model represents. Property does not accept a `type` argument, as the type is inferred from the column type.
 
-Use the `virtual_property` keyword for properties that are not columns in the table that the model represents.Virtual properties do accept a `type` argument, as the type cannot be inferred from the column type.
+Use the `virtual_property` keyword for properties that are not columns in the table that the model represents. Virtual properties require a `type` argument, as the type cannot be inferred.
 
 
 ## Development
