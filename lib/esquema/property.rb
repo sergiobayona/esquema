@@ -46,7 +46,7 @@ module Esquema
     # An object can be any of the following instance types:
     #  An ActiveRecord column. Example: ActiveRecord::ConnectionAdapters::SQLite3::Column
     #  An ActiveRecord association reflection. Example: ActiveRecord::Reflection::BelongsToReflection
-    #  A virtual property.
+    #  An Esquema virtual column. Example: Esquema::VirtualColumn
     # @param options [Hash] Additional options for the property.
     # @raise [ArgumentError] If the property does not have a name.
     def initialize(object, options = {})
