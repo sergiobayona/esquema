@@ -3,7 +3,7 @@
 require_relative "type_caster"
 module Esquema
   # Represents a property in the Esquema schema.
-  class Property
+  class Property # rubocop:disable Metrics/ClassLength
     # Mapping of database types to JSON types.
     DB_TO_JSON_TYPE_MAPPINGS = {
       date: "date",
@@ -20,11 +20,24 @@ module Esquema
       object: "object"
     }.freeze
 
-    # List of attribute names for the Property class.
-    ATTRS = %i[type default title description items enum].freeze
+    NUMERIC_CONSTRAINT_KEYWORDS = %i[minimum maximum exclusiveMinimum exclusiveMaximum multipleOf].freeze
+    STRING_CONSTRAINT_KEYWORDS = %i[maxLength minLength pattern format].freeze
+    ARRAY_CONSTRAINT_KEYWORDS = %i[maxItems minItems uniqueItems items].freeze
+    OBJECT_CONSTRAINT_KEYWORDS = %i[maxProperties minProperties properties additionalProperties dependencies].freeze
+    LOGICAL_KEYWORDS = %i[allOf anyOf oneOf not].freeze
+    GENERIC_KEYWORDS = %i[type default title description enum const].freeze
 
-    # Accessors for the attributes.
-    attr_accessor(*ATTRS)
+    KEYWORDS = (
+      NUMERIC_CONSTRAINT_KEYWORDS +
+      STRING_CONSTRAINT_KEYWORDS  +
+      ARRAY_CONSTRAINT_KEYWORDS   +
+      OBJECT_CONSTRAINT_KEYWORDS  +
+      LOGICAL_KEYWORDS            +
+      GENERIC_KEYWORDS
+    ).freeze
+
+    FORMAT_OPTIONS = %i[date-time date time email hostname ipv4 ipv6 uri uuid uri-reference uri-template].freeze
+
     attr_reader :object, :options
 
     # Initializes a new Property instance.
@@ -47,8 +60,8 @@ module Esquema
     #
     # @return [Hash] The JSON representation of the Property.
     def as_json
-      ATTRS.each_with_object({}) do |property, hash|
-        value = send("build_#{property}")
+      KEYWORDS.each_with_object({}) do |property, hash|
+        value = send("build_#{property.downcase}")
         next if value.nil? || (value.is_a?(String) && value.empty?)
 
         hash[property] = value
@@ -110,6 +123,108 @@ module Esquema
     # @return [Array, nil] The enum attribute.
     def build_enum
       options[:enum]
+    end
+
+    def build_minimum
+      options[:minimum]
+    end
+
+    def build_maximum
+      options[:maximum]
+    end
+
+    def build_exclusiveminimum
+      options[:exclusiveMinimum]
+    end
+
+    def build_exclusivemaximum
+      options[:exclusiveMaximum]
+    end
+
+    def build_multipleof
+      options[:multipleof]
+    end
+
+    def build_maxlength
+      options[:maxLength]
+    end
+
+    def build_minlength
+      options[:minLength]
+    end
+
+    def build_pattern
+      options[:pattern]
+    end
+
+    def build_format
+      options[:format]
+    end
+
+    def build_maxitems
+      raise ArgumentError, "maxItems must be an integer" if options[:maxItems] && !options[:maxItems].is_a?(Integer)
+      raise ArgumentError, "maxItems must be a non-negative integer" if options[:maxItems] && options[:maxItems] < 0
+
+      if options[:maxItems] && options[:type] != :array
+        raise ArgumentError, "maxItems must be use for array type properties only."
+      end
+
+      options[:maxItems]
+    end
+
+    def build_minitems
+      raise ArgumentError, "minItems must be an integer" if options[:minItems] && !options[:minItems].is_a?(Integer)
+      raise ArgumentError, "minItems must be a non-negative integer" if options[:minItems] && options[:minItems] < 0
+
+      if options[:minItems] && options[:type] != :array
+        raise ArgumentError, "minItems must be use for array type properties only."
+      end
+
+      options[:minItems]
+    end
+
+    def build_uniqueitems
+      options[:uniqueItems]
+    end
+
+    def build_properties
+      options[:properties]
+    end
+
+    def build_maxproperties
+      options[:maxProperties]
+    end
+
+    def build_minproperties
+      options[:minProperties]
+    end
+
+    def build_additionalproperties
+      options[:additionalProperties]
+    end
+
+    def build_dependencies
+      options[:dependencies]
+    end
+
+    def build_allof
+      options[:allOf]
+    end
+
+    def build_anyof
+      options[:anyOf]
+    end
+
+    def build_oneof
+      options[:oneOf]
+    end
+
+    def build_not
+      options[:not]
+    end
+
+    def build_const
+      options[:const]
     end
   end
 end

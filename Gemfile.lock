@@ -140,7 +140,7 @@ PLATFORMS
 
 DEPENDENCIES
   esquema!
-  pry-byebug (>= 3.10.1)
+  pry-byebug
   rake (~> 13.1)
   rspec (~> 3.13)
   rubocop (~> 1.60)

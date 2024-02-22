@@ -14,9 +14,11 @@ RSpec.describe "A schema with multiple objects" do
 
       enhance_schema do
         property :name, title: "System User Name"
-        virtual_property :tags, type: :array, items: { type: :string }
-        virtual_property :foo, type: :string
+        virtual_property :tags, type: :array, items: { type: :string }, minItems: 1, maxItems: 5
+        virtual_property :email, type: :string, format: :email
         virtual_property :bar, type: :number, default: 5
+        virtual_property :baz, type: :integer, minimum: 0, maximum: 100
+        virtual_property :qux, type: :string, maxLength: 10, minLength: 5
       end
     end
   end
@@ -31,7 +33,9 @@ RSpec.describe "A schema with multiple objects" do
                                                    "title": "Tags",
                                                    "items": {
                                                      "type": "string"
-                                                   }
+                                                   },
+                                                   "minItems": 1,
+                                                   "maxItems": 5
                                                  }
                                                }
                                              })
@@ -42,9 +46,10 @@ RSpec.describe "A schema with multiple objects" do
                                                "title": "User",
                                                "type": "object",
                                                "properties": {
-                                                 "foo": {
+                                                 "email": {
                                                    "type": "string",
-                                                   "title": "Foo"
+                                                   "title": "Email",
+                                                   "format": "email"
                                                  }
                                                }
                                              })
@@ -59,6 +64,37 @@ RSpec.describe "A schema with multiple objects" do
                                                    "type": "number",
                                                    "title": "Bar",
                                                    "default": 5
+                                                 }
+                                               }
+                                             })
+  end
+
+  it "includes the virtual property with an integer" do
+    puts user.json_schema
+    expect(user.json_schema).to include_json({
+                                               "title": "User",
+                                               "type": "object",
+                                               "properties": {
+                                                 "baz": {
+                                                   "type": "integer",
+                                                   "title": "Baz",
+                                                   "minimum": 0,
+                                                   "maximum": 100
+                                                 }
+                                               }
+                                             })
+  end
+
+  it "includes the virtual property with a string and a maximum length" do
+    expect(user.json_schema).to include_json({
+                                               "title": "User",
+                                               "type": "object",
+                                               "properties": {
+                                                 "qux": {
+                                                   "type": "string",
+                                                   "title": "Qux",
+                                                   "maxLength": 10,
+                                                   "minLength": 5
                                                  }
                                                }
                                              })
