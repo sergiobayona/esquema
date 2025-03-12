@@ -1,3 +1,5 @@
+Deprecation Notice: This gem is no longer maintained. Please use the [EasyTalk](https://github.com/sergiobayona/easy_talk) gem instead.
+
 # Esquema
 
 Esquema is a Ruby library for JSON Schema generation from ActiveRecord models.
